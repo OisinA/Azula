@@ -1,0 +1,45 @@
+# Variable
+
+int x = 0;
+string name = "Oisin";
+bool valid = true;
+
+float y = 1.2;
+string title = "azula";
+
+# Functions
+
+func add(int x, int y): int {
+	return x + y;
+}
+
+# Loops
+
+while x {
+	
+}
+
+for i in [0-20] {
+	print(i);
+}
+
+# Lists and Arrays
+
+list my_list = list(int) [9, 3, 2];
+array my_array = array(string) ["x", "y", "z"];
+
+# Hashmap
+
+hashmap my_map = hashmap(int, string) { 1242: "Oisin", 1284: "John" };
+
+# Class
+
+class MyClass: int x, string y {
+	func print_vars(): void {
+		print(x);
+		print(y);
+	}
+}
+
+MyClass object = MyClass(4, "Oisin");
+object.print_vars();
