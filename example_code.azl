@@ -43,10 +43,3 @@ class MyClass: int x, string y {
 
 MyClass object = MyClass(4, "Oisin");
 object.print_vars();
-
-# Print
-out "my string";
-
-# Read in
-
-input = in "Enter name: ";
