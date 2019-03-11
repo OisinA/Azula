@@ -44,7 +44,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if typeMap[val.Type()] == node.Token.Literal {
 			env.Set(node.Name.Value, val)
 		} else {
-			return newError("trying to assign wrong data type to: " + node.Name.Value)
+			return newError("trying to assign %s to %s: " + node.Name.Value, typeMap[val.Type()], node.Token.Literal)
 		}
 
 	// Expressions
