@@ -7,7 +7,7 @@ import (
 
 type LetStatement struct {
 	Token token.Token
-	Name *Identifier
+	Name *TypedIdentifier
 	Value Expression
 }
 

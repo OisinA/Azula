@@ -11,7 +11,6 @@ func TestLetStatements(t *testing.T) {
 	input := `int x = 5;
 	int y = 10;
 	int foo = 1923;
-	
 	`
 	l := lexer.New(input)
 	p := New(l)
@@ -99,6 +98,11 @@ func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 
 	if letStmt.Name.TokenLiteral() != name {
 		t.Errorf("s.Name not '%s'. got=%s", name, letStmt.Name)
+		return false
+	}
+
+	if letStmt.Name.ReturnType.Token.Literal != "int" {
+		t.Errorf("s.ReturnType not int. got=%s", letStmt.Name.ReturnType.Token.Literal)
 		return false
 	}
 
@@ -307,8 +311,22 @@ func TestParsingInfixExpressions(t *testing.T) {
 func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
 	ident, ok := exp.(*ast.Identifier)
 	if !ok {
-		t.Errorf("exp not *ast.Identifier. got=%T", exp)
-		return false
+		ident1, ok := exp.(*ast.TypedIdentifier)
+		if !ok {
+			t.Fatalf("exp not identifier. got=%T", exp)
+			return false
+		}
+		if ident1.Value != value {
+                	t.Errorf("ident.Value not %s. got=%s", value, ident1.Value)
+                	return false
+        	}
+
+        	if ident1.TokenLiteral() != value {
+                	t.Errorf("ident.TokenLiteral not %s. got=%s", value, ident1.TokenLiteral())
+                	return false
+        	}
+
+        	return true
 	}
 
 	if ident.Value != value {
@@ -322,6 +340,31 @@ func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
 	}
 
 	return true
+}
+
+func testiTypedIdentifier(t *testing.T, exp ast.Expression, value string, retType string) bool {
+        ident, ok := exp.(*ast.TypedIdentifier)
+        if !ok {
+                t.Errorf("exp not *ast.Identifier. got=%T", exp)
+                return false
+        }
+
+        if ident.Value != value {
+                t.Errorf("ident.Value not %s. got=%s", value, ident.Value)
+                return false
+        }
+
+        if ident.TokenLiteral() != value {
+                t.Errorf("ident.TokenLiteral not %s. got=%s", value, ident.TokenLiteral())
+                return false
+        }
+
+	if ident.ReturnType.Value != retType {
+		t.Errorf("ident.ReturnType not %s. got=%s", retType, ident.ReturnType.Value)
+		return false
+	}
+
+        return true
 }
 
 func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
@@ -535,4 +578,45 @@ func TestIfExpression(t *testing.T) {
 	if !testIdentifier(t, alternative.Expression, "y") {
 		return
 	}
+}
+
+func TestFunctionLiteralParsing(t *testing.T) {
+	input := "func function(int x, int y): int { x + y; }"
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
+
+	function, ok := stmt.Expression.(*ast.FunctionLiteral)
+	if !ok {
+		t.Fatalf("stmt.Expression is not ast.FunctionLiteral. got=%T", stmt.Expression)
+	}
+
+	if len(function.Parameters) != 2 {
+		t.Fatalf("function literal parameters wrong. want 2, got=%d\n", len(function.Parameters))
+	}
+
+	testLiteralExpression(t, function.Parameters[0], "x")
+	testLiteralExpression(t, function.Parameters[1], "y")
+
+	if function.ReturnType.Value != "int" {
+		t.Fatalf("function return type wrong. got=%s", function.ReturnType.Value)
+	}
+
+	if len(function.Body.Statements) != 1 {
+		t.Fatalf("function.Body.Statements has not 1 statements. got=%d\n", len(function.Body.Statements)) 
+	}
+
+	bodyStmt, ok := function.Body.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("function body stmt is not ast.ExpressionStatement. got=%T", function.Body.Statements[0])
+	}
+
+	testInfixExpression(t, bodyStmt.Expression, "x", "+", "y")
 }

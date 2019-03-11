@@ -59,6 +59,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.FALSE, p.parseBoolean)
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
 	p.registerPrefix(token.IF, p.parseIfExpression)
+	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
@@ -141,18 +142,20 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 }
 
 func (p *Parser) peekError(t token.TokenType) {
-	msg := fmt.Sprintf("expected next token to be %s, got %s instead", t, p.peekToken.Type)
+	msg := fmt.Sprintf("expected next token to be %s, got %s (%s) instead", t, p.peekToken.Type, p.peekToken.Literal)
 	p.errors = append(p.errors, msg)
 }
 
 func (p *Parser) parseLetStatement() *ast.LetStatement {
 	stmt := &ast.LetStatement{Token: p.curToken}
 
+	retType := p.curToken
+
 	if !p.expectPeek(token.IDENT) {
 		return nil
 	}
 
-	stmt.Name = &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+	stmt.Name = &ast.TypedIdentifier{Token: p.curToken, Value: p.curToken.Literal, ReturnType: ast.Identifier{Token: retType, Value: retType.Literal}}
 
 	if !p.expectPeek(token.ASSIGN) {
 		return nil
@@ -336,4 +339,63 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	}
 
 	return block
+}
+
+func (p *Parser) parseFunctionLiteral() ast.Expression {
+	def := p.curToken
+	p.nextToken()
+	name := p.curToken
+	lit := &ast.FunctionLiteral{Token: def, Name: &ast.Identifier{Token: name, Value: name.Literal}}
+
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+
+	lit.Parameters = p.parseFunctionParameters()
+
+	if !p.expectPeek(token.RETURN_TYPE) {
+		return nil
+	}
+
+	p.nextToken()
+	lit.ReturnType = &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+
+	lit.Body = p.parseBlockStatement()
+
+	return lit
+}
+
+func (p *Parser) parseFunctionParameters() []*ast.TypedIdentifier {
+	identifiers := []*ast.TypedIdentifier{}
+
+	if p.peekTokenIs(token.RPAREN) {
+		p.nextToken()
+		return identifiers
+	}
+
+	p.nextToken()
+
+	identType := p.curToken
+	p.nextToken()
+	ident := &ast.TypedIdentifier{Token: p.curToken, Value: p.curToken.Literal, ReturnType: ast.Identifier{Token: identType, Value: identType.Literal}}
+	identifiers = append(identifiers, ident)
+
+	for p.peekTokenIs(token.COMMA) {
+		p.nextToken()
+		p.nextToken()
+		identType = p.curToken
+		p.nextToken()
+		ident := &ast.TypedIdentifier{Token: p.curToken, Value: p.curToken.Literal, ReturnType: ast.Identifier{Token: identType, Value: identType.Literal}}
+		identifiers = append(identifiers, ident)
+	}
+
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+
+	return identifiers
 }
