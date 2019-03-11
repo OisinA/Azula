@@ -1,0 +1,9 @@
+func count(int n): int {
+	if(n == 10) {
+		return 10;
+	}
+
+	return count(n + 1);
+}
+
+count(1);
