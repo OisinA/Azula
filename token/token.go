@@ -29,6 +29,7 @@ const (
 
 	FUNCTION = "FUNCTION"
 	LET_INT  = "LET_INT"
+	LET_BOOL = "LET_BOOL"
 	RETURN   = "RETURN"
 
 	TRUE  = "TRUE"
@@ -50,6 +51,7 @@ type Token struct {
 var keywords = map[string]TokenType{
 	"func":   FUNCTION,
 	"int":    LET_INT,
+	"bool":   LET_BOOL,
 	"return": RETURN,
 	"true":   TRUE,
 	"false":  FALSE,
