@@ -1,9 +1,9 @@
 package main
 
 import (
+	"azula/repl"
 	"fmt"
 	"os"
-	"azula/repl"
 )
 
 func main() {
