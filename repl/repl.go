@@ -1,11 +1,11 @@
 package repl
 
 import (
+	"azula/lexer"
+	"azula/token"
 	"bufio"
 	"fmt"
 	"io"
-	"azula/lexer"
-	"azula/token"
 )
 
 const PROMPT = ">> "

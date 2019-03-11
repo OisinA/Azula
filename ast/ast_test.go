@@ -6,15 +6,15 @@ import (
 )
 
 func TestString(t *testing.T) {
-	program := &Program {
-		Statements: []Statement {
-			&LetStatement {
-				Token: token.Token {Type: token.LET_INT, Literal: "int"},
-				Name: &Identifier {
+	program := &Program{
+		Statements: []Statement{
+			&LetStatement{
+				Token: token.Token{Type: token.LET_INT, Literal: "int"},
+				Name: &Identifier{
 					Token: token.Token{Type: token.IDENT, Literal: "myVar"},
 					Value: "myVar",
 				},
-				Value: &Identifier {
+				Value: &Identifier{
 					Token: token.Token{Type: token.IDENT, Literal: "anotherVar"},
 					Value: "anotherVar",
 				},

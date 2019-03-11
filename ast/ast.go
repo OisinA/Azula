@@ -58,8 +58,8 @@ func (i *Identifier) String() string {
 }
 
 type TypedIdentifier struct {
-	Token token.Token
-	Value string
+	Token      token.Token
+	Value      string
 	ReturnType Identifier
 }
 

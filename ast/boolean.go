@@ -15,6 +15,6 @@ func (b *Boolean) TokenLiteral() string {
 	return b.Token.Literal
 }
 
-func(b *Boolean) String() string {
+func (b *Boolean) String() string {
 	return b.Token.Literal
 }

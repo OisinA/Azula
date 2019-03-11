@@ -7,10 +7,10 @@ import (
 )
 
 type FunctionLiteral struct {
-	Token token.Token
-	Name *Identifier
+	Token      token.Token
+	Name       *Identifier
 	Parameters []*TypedIdentifier
-	Body *BlockStatement
+	Body       *BlockStatement
 	ReturnType *Identifier
 }
 

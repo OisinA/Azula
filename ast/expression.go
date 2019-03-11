@@ -5,7 +5,7 @@ import (
 )
 
 type ExpressionStatement struct {
-	Token token.Token
+	Token      token.Token
 	Expression Expression
 }
 

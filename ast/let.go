@@ -7,7 +7,7 @@ import (
 
 type LetStatement struct {
 	Token token.Token
-	Name *TypedIdentifier
+	Name  *TypedIdentifier
 	Value Expression
 }
 
@@ -31,5 +31,3 @@ func (ls *LetStatement) String() string {
 	out.WriteString(";")
 	return out.String()
 }
-
-

@@ -5,15 +5,15 @@ import (
 )
 
 type Lexer struct {
-	input string
-	position int // current position input (current char)
-	readPosition int // current read position in input (after currrent char)
-	ch byte // current character under examination
+	input        string
+	position     int  // current position input (current char)
+	readPosition int  // current read position in input (after currrent char)
+	ch           byte // current character under examination
 }
 
 // New gives a Lexer using the given input
 func New(input string) *Lexer {
-	l := &Lexer{input:input}
+	l := &Lexer{input: input}
 	l.readChar()
 	return l
 }

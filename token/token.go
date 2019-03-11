@@ -1,24 +1,23 @@
 package token
 
 const (
-	
 	ILLEGAL = "ILLEGAL"
-	EOF = "EOF"
+	EOF     = "EOF"
 
 	IDENT = "IDENT" //identifier (x, y)
-	INT = "INT" //integer
+	INT   = "INT"   //integer
 
-	ASSIGN = "="
-	PLUS = "+"
-	MINUS = "-"
-	BANG = "!"
+	ASSIGN   = "="
+	PLUS     = "+"
+	MINUS    = "-"
+	BANG     = "!"
 	ASTERISK = "*"
-	SLASH = "/"
+	SLASH    = "/"
 
 	LT = "<"
 	GT = ">"
 
-	COMMA = ","
+	COMMA     = ","
 	SEMICOLON = ";"
 
 	LPAREN = "("
@@ -29,34 +28,33 @@ const (
 	RETURN_TYPE = ":"
 
 	FUNCTION = "FUNCTION"
-	LET_INT = "LET_INT"
-	RETURN = "RETURN"
+	LET_INT  = "LET_INT"
+	RETURN   = "RETURN"
 
-	TRUE = "TRUE"
+	TRUE  = "TRUE"
 	FALSE = "FALSE"
-	IF = "IF"
-	ELSE = "ELSE"
+	IF    = "IF"
+	ELSE  = "ELSE"
 
-	EQ = "=="
+	EQ     = "=="
 	NOT_EQ = "!="
-
 )
 
 type TokenType string
 
 type Token struct {
-	Type TokenType
+	Type    TokenType
 	Literal string
 }
 
-var keywords = map[string] TokenType {
-	"func": FUNCTION,
-	"int": LET_INT,
+var keywords = map[string]TokenType{
+	"func":   FUNCTION,
+	"int":    LET_INT,
 	"return": RETURN,
-	"true": TRUE,
-	"false": FALSE,
-	"if": IF,
-	"else": ELSE,
+	"true":   TRUE,
+	"false":  FALSE,
+	"if":     IF,
+	"else":   ELSE,
 }
 
 // LookupIdent checks the keywords table to see if identifier is a keyword
