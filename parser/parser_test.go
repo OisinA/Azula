@@ -720,3 +720,17 @@ func TestParsingIndexExpressions(t *testing.T) {
 		return
 	}
 }
+
+func TestForLoopsExpression(t *testing.T) {
+	input := "for(p in x) { int i = i + p; }"
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("stmt not *ast.ExpressionStatement. got=%T", stmt.Expression)
+	}
+}

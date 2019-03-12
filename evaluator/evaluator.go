@@ -146,9 +146,29 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			} else {
 				return newError("function %s returned %s, not %s", fn.Name.String(), typeMap[result.Type()], fn.ReturnType.Token.Literal)
 			}
+
 		default:
 			return applyFunction(function, args)
 		}
+	case *ast.ForLiteral:
+		obj := Eval(node.Iterator, env)
+		if isError(obj) {
+			return obj
+		}
+		forLoop, ok := obj.(*object.Array)
+		if !ok {
+			return newError("iterator must be an array")
+		}
+		env1 := object.NewEnclosedEnvironment(env)
+		var result object.Object
+		for i := 0; i < len(forLoop.Elements); i++ {
+			env1.Set(node.Parameter.String(), forLoop.Elements[i])
+			result = Eval(node.Body, env1)
+		}
+		if result == nil {
+			result = NULL
+		}
+		return result
 	}
 	return nil
 }

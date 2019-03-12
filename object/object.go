@@ -12,6 +12,7 @@ const (
 	STRING_OBJ = "STRING"
 	ARRAY_OBJ = "ARRAY"
 	BUILTIN_OBJ = "BUILTIN"
+	FOR_OBJ = "FOR"
 )
 
 type Object interface {

@@ -30,6 +30,8 @@ const (
 	FUNCTION = "FUNCTION"
 	LET  = "LET"
 	RETURN   = "RETURN"
+	FOR = "FOR"
+	IN = "IN"
 
 	STRING = "STRING"
 
@@ -63,6 +65,8 @@ var keywords = map[string]TokenType{
 	"false":  FALSE,
 	"if":     IF,
 	"else":   ELSE,
+	"for":    FOR,
+	"in":     IN,
 }
 
 // LookupIdent checks the keywords table to see if identifier is a keyword

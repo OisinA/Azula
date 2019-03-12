@@ -32,6 +32,9 @@ func TestNextToken(t *testing.T) {
 	"yes";
 
 	[1, 2];
+	for(i in x) {
+		print(i);
+	}
 	`
 
 	tests := []struct {
@@ -121,6 +124,19 @@ func TestNextToken(t *testing.T) {
 		{token.INT, "2"},
 		{token.RBRACKET, "]"},
 		{token.SEMICOLON, ";"},
+		{token.FOR, "for"},
+		{token.LPAREN, "("},
+		{token.IDENT, "i"},
+		{token.IN, "in"},
+		{token.IDENT, "x"},
+		{token.RPAREN, ")"},
+		{token.LBRACE, "{"},
+		{token.IDENT, "print"},
+		{token.LPAREN, "("},
+		{token.IDENT, "i"},
+		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
+		{token.RBRACE, "}"},
 		{token.EOF, ""},
 	}
 

@@ -64,4 +64,32 @@ var builtins = map[string]*object.Builtin {
 			return NULL
 		},
 	},
+	"range": &object.Builtin {
+		Fn: func(args ...object.Object) object.Object {
+			lower := int64(0)
+			higher := int64(0)
+			if len(args) == 1 {
+				hi, ok := args[0].(*object.Integer)
+				if !ok {
+					return newError("can't get range of non-int " + args[0].Inspect())
+				}
+				higher = hi.Value
+			} else if len(args) == 2 {
+				low, ok := args[0].(*object.Integer)
+				hi, ok := args[1].(*object.Integer)
+				if !ok {
+					return newError("can't get range of a non-int")
+				}
+				lower = low.Value
+				higher = hi.Value
+			} else {
+				return newError("wrong number of arguments. got=%q, want 1/2", len(args))
+			}
+			array := &object.Array{ElementType: "int", Elements: []object.Object{}}
+			for i := lower; i < higher; i++ {
+				array.Elements = append(array.Elements, &object.Integer{Value: int64(i)})
+			}
+			return array
+		},
+	},
 }
