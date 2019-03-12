@@ -1,4 +1,4 @@
 int numFirst = toInt(input("Number 1: "));
 int numSecond = toInt(input("Number 2: "));
 
-numFirst + numSecond
+print(numFirst + numSecond)

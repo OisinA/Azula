@@ -55,4 +55,13 @@ var builtins = map[string]*object.Builtin {
 			return &object.Integer{Value: int64(i)}
 		},
 	},
+	"print": &object.Builtin {
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%q, want 1", len(args))
+			}
+			fmt.Println(args[0].Inspect())
+			return NULL
+		},
+	},
 }

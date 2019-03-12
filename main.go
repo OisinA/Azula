@@ -30,8 +30,9 @@ func main() {
 		}
 
 		evaluated := evaluator.Eval(program, env)
+		evaluated, ok := evaluated.(*object.Error)
 
-		if evaluated != nil {
+		if ok {
 			fmt.Println(evaluated.Inspect())
 		}
 	} else {

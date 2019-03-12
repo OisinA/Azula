@@ -41,8 +41,6 @@ const (
 	LBRACKET = "["
 	RBRACKET = "]"
 
-	UP_TO = "-"
-
 	EQ     = "=="
 	NOT_EQ = "!="
 )

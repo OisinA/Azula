@@ -25,12 +25,12 @@ for i in [0-20] {
 
 # Lists and Arrays
 
-list my_list = list(int) [9, 3, 2];
-array my_array = array(string) ["x", "y", "z"];
+list(string) my_list = [9, 3, 2];
+array(string) my_array = ["x", "y", "z"];
 
 # Hashmap
 
-hashmap my_map = hashmap(int, string) { 1242: "Oisin", 1284: "John" };
+hashmap(int, string) my_map = { 1242: "Oisin", 1284: "John" };
 
 # Class
 

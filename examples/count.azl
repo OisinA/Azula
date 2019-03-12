@@ -6,4 +6,4 @@ func count(int n): int {
 	return count(n + 1);
 }
 
-count(1);
+print(count(1));

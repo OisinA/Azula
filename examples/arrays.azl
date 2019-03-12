@@ -1,0 +1,3 @@
+array(string) names = ["Oisin", "John", "Mary"];
+
+print(names[-1]);

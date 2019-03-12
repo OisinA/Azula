@@ -10,4 +10,4 @@ func fibonacci(int x): int {
         }
 }
 
-fibonacci(30)
+print(fibonacci(30))

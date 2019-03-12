@@ -2,4 +2,4 @@ func say_hello(string name, int age): string {
 	return "Hello " + name + ". You are " + age + " years old.";
 }
 
-say_hello("Oisin", 19);
+print(say_hello("Oisin", 19));
