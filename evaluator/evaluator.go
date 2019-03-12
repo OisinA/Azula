@@ -14,6 +14,7 @@ var (
 	typeMap = map[object.ObjectType]string {
 		object.INTEGER_OBJ: "int",
 		object.BOOLEAN_OBJ: "bool",
+		object.STRING_OBJ: "string",
 	}
 )
 
@@ -53,6 +54,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 	case *ast.Boolean:
 		return nativeBoolToBooleanObject(node.Value)
+
+	case *ast.StringLiteral:
+		return &object.String{Value: node.Value}
 
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)

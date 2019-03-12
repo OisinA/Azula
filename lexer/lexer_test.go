@@ -27,18 +27,21 @@ func TestNextToken(t *testing.T) {
 
 	5 != 10;
 	5 == 5;
+
+	"foobar";
+	"yes";
 	`
 
 	tests := []struct {
 		expectedType    token.TokenType
 		expectedLiteral string
 	}{
-		{token.LET_INT, "int"},
+		{token.LET, "int"},
 		{token.IDENT, "five"},
 		{token.ASSIGN, "="},
 		{token.INT, "5"},
 		{token.SEMICOLON, ";"},
-		{token.LET_INT, "int"},
+		{token.LET, "int"},
 		{token.IDENT, "ten"},
 		{token.ASSIGN, "="},
 		{token.INT, "10"},
@@ -46,14 +49,14 @@ func TestNextToken(t *testing.T) {
 		{token.FUNCTION, "func"},
 		{token.IDENT, "add"},
 		{token.LPAREN, "("},
-		{token.LET_INT, "int"},
+		{token.LET, "int"},
 		{token.IDENT, "x"},
 		{token.COMMA, ","},
-		{token.LET_INT, "int"},
+		{token.LET, "int"},
 		{token.IDENT, "y"},
 		{token.RPAREN, ")"},
 		{token.RETURN_TYPE, ":"},
-		{token.LET_INT, "int"},
+		{token.LET, "int"},
 		{token.LBRACE, "{"},
 		{token.RETURN, "return"},
 		{token.IDENT, "x"},
@@ -61,7 +64,7 @@ func TestNextToken(t *testing.T) {
 		{token.IDENT, "y"},
 		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
-		{token.LET_INT, "int"},
+		{token.LET, "int"},
 		{token.IDENT, "result"},
 		{token.ASSIGN, "="},
 		{token.IDENT, "add"},
@@ -105,6 +108,10 @@ func TestNextToken(t *testing.T) {
 		{token.INT, "5"},
 		{token.EQ, "=="},
 		{token.INT, "5"},
+		{token.SEMICOLON, ";"},
+		{token.STRING, "foobar"},
+		{token.SEMICOLON, ";"},
+		{token.STRING, "yes"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
