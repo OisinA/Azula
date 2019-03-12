@@ -187,11 +187,23 @@ func evalInfixExpression(operator string, left object.Object, right object.Objec
 		return nativeBoolToBooleanObject(left == right)
 	case operator == "!=":
 		return nativeBoolToBooleanObject(left != right)
-	case left.Type() != right.Type():
+	case left.Type() != right.Type() && operator != "+":
 		return newError("type mismatch: %s %s %s", left.Type(), operator, right.Type())
+	case operator == "+":
+		return evalStringInfixExpression(operator, &object.String{Value: string(left.Inspect())}, &object.String{Value: string(right.Inspect())})
 	default:
 		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
 	}
+}
+
+func evalStringInfixExpression(operator string, left object.Object, right object.Object) object.Object {
+	if operator != "+" {
+		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
+	}
+
+	leftVal := left.(*object.String).Value
+	rightVal := right.(*object.String).Value
+	return &object.String{Value: leftVal + rightVal}
 }
 
 func evalIntegerInfixExpression(operator string, left object.Object, right object.Object) object.Object {
