@@ -10,9 +10,12 @@ const (
 	ERROR_OBJ = "ERROR"
 	FUNCTION_OBJ = "FUNCTION"
 	STRING_OBJ = "STRING"
+	BUILTIN_OBJ = "BUILTIN"
 )
 
 type Object interface {
 	Type() ObjectType
 	Inspect() string
 }
+
+type BuiltinFunction func(args ...Object) Object
