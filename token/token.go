@@ -38,6 +38,11 @@ const (
 	IF    = "IF"
 	ELSE  = "ELSE"
 
+	LBRACKET = "["
+	RBRACKET = "]"
+
+	UP_TO = "-"
+
 	EQ     = "=="
 	NOT_EQ = "!="
 )
@@ -54,6 +59,7 @@ var keywords = map[string]TokenType{
 	"int":    LET,
 	"bool":   LET,
 	"string": LET,
+	"array":  LET,
 	"return": RETURN,
 	"true":   TRUE,
 	"false":  FALSE,

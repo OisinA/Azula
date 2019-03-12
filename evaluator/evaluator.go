@@ -15,6 +15,7 @@ var (
 		object.INTEGER_OBJ: "int",
 		object.BOOLEAN_OBJ: "bool",
 		object.STRING_OBJ: "string",
+		object.ARRAY_OBJ: "array",
 	}
 )
 
@@ -42,6 +43,13 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if isError(val) {
 			return val
 		}
+		if val.Type() == object.ARRAY_OBJ {
+			array := val.(*object.Array)
+			if node.Name.ReturnType.Value != array.ElementType {
+				return newError("trying to assign array %s to array %s: " + node.Name.Value, array.ElementType, node.Name.ReturnType.Value)
+			}
+			env.Set(node.Name.Value, val)
+		}
 		if typeMap[val.Type()] == node.Token.Literal {
 			env.Set(node.Name.Value, val)
 		} else {
@@ -57,6 +65,23 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 	case *ast.StringLiteral:
 		return &object.String{Value: node.Value}
+
+	case *ast.ArrayLiteral:
+		elements := evalExpressions(node.Elements, env)
+		if len(elements) == 1 && isError(elements[0]) {
+			return elements[0]
+		}
+		var t string
+		for _, tt := range elements {
+			if t == "" {
+				t = typeMap[tt.Type()]
+				continue
+			}
+			if t != typeMap[tt.Type()] {
+				return newError("trying to assign %s to array of %s", typeMap[tt.Type()], t)
+			}
+		}
+		return &object.Array{ElementType: t, Elements: elements}
 
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
@@ -84,6 +109,17 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalIdentifier(node, env)
 	case *ast.TypedIdentifier:
 		return evalTypedIdentifier(node, env)
+
+	case *ast.IndexExpression:
+		left := Eval(node.Left, env)
+		if isError(left) {
+			return left
+		}
+		index := Eval(node.Index, env)
+		if isError(index) {
+			return index
+		}
+		return evalIndexExpression(left, index)
 
 	case *ast.FunctionLiteral:
 		params := node.Parameters
@@ -270,6 +306,31 @@ func evalTypedIdentifier(node *ast.TypedIdentifier, env *object.Environment) obj
 	}
 
 	return val
+}
+
+func evalIndexExpression(left object.Object, index object.Object) object.Object {
+	switch {
+	case left.Type() == object.ARRAY_OBJ && index.Type() == object.INTEGER_OBJ:
+		return evalArrayIndexExpression(left, index)
+	default:
+		return newError("index operator not supported: %s", left.Type())
+	}
+}
+
+func evalArrayIndexExpression(array, index object.Object) object.Object {
+	arrayObject := array.(*object.Array)
+	idx := index.(*object.Integer).Value
+	max := int64(len(arrayObject.Elements) - 1)
+
+	if idx > max {
+		return newError("index out of bounds")
+	}
+
+	if idx < 0 {
+		idx = int64(len(arrayObject.Elements))+idx
+	}
+
+	return arrayObject.Elements[idx]
 }
 
 func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {
