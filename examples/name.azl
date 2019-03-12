@@ -1,0 +1,3 @@
+string name = input("What's your name: ");
+
+"Hello, " + name;

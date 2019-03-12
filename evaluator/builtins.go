@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"bufio"
 	"os"
+	"strings"
 )
 
 var builtins = map[string]*object.Builtin {
@@ -36,7 +37,7 @@ var builtins = map[string]*object.Builtin {
 			if err != nil {
 				return newError("error reading in input")
 			}
-			return &object.String{Value: string(text)}
+			return &object.String{Value: strings.TrimSpace(string(text))}
 		},
 	},
 }
