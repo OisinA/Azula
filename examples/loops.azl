@@ -1,0 +1,7 @@
+func sayHello(int n): string {
+	for(i in range(n)) {
+		print("Hello");
+	}
+	return "done";
+}
+print(sayHello(20));
