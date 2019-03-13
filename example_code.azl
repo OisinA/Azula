@@ -15,11 +15,11 @@ func add(int x, int y): int {
 
 # Loops
 
-while x {
+while(x) {
 	
 }
 
-for i in [0-20] {
+for(i in range(0, 20)) {
 	print(i);
 }
 
