@@ -34,6 +34,8 @@ const (
 	FOR = "FOR"
 	IN = "IN"
 
+	CLASS = "CLASS"
+
 	STRING = "STRING"
 
 	TRUE  = "TRUE"
@@ -69,6 +71,7 @@ var keywords = map[string]TokenType{
 	"for":    FOR,
 	"in":     IN,
 	"void":   VOID,
+	"class":  CLASS,
 }
 
 // LookupIdent checks the keywords table to see if identifier is a keyword

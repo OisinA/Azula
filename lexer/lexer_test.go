@@ -37,6 +37,12 @@ func TestNextToken(t *testing.T) {
 	}
 
 	i = 5;
+
+	class TestClass(int x) {
+		func get_x(): int {
+			return x;
+		}
+	}
 	`
 
 	tests := []struct {
@@ -143,6 +149,25 @@ func TestNextToken(t *testing.T) {
 		{token.ASSIGN, "="},
 		{token.INT, "5"},
 		{token.SEMICOLON, ";"},
+		{token.CLASS, "class"},
+		{token.IDENT, "TestClass"},
+		{token.LPAREN, "("},
+		{token.LET, "int"},
+		{token.IDENT, "x"},
+		{token.RPAREN, ")"},
+		{token.LBRACE, "{"},
+		{token.FUNCTION, "func"},
+		{token.IDENT, "get_x"},
+		{token.LPAREN, "("},
+		{token.RPAREN, ")"},
+		{token.RETURN_TYPE, ":"},
+		{token.LET, "int"},
+		{token.LBRACE, "{"},
+		{token.RETURN, "return"},
+		{token.IDENT, "x"},
+		{token.SEMICOLON, ";"},
+		{token.RBRACE, "}"},
+		{token.RBRACE, "}"},
 		{token.EOF, ""},
 	}
 

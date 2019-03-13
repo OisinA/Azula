@@ -761,3 +761,32 @@ func TestReassignStatement(t *testing.T) {
 		t.Errorf("stmt.Name is not '%s'. got=%s", "i", stmt.Name.TokenLiteral())
 	}
 }
+
+func TestClassLiteral(t *testing.T) {
+	input := `class TestClass(int x, int y) {
+		func get_x(): int {
+			return x;
+		}
+	}`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("stmt not *ast.ClassLiteral. got=%T", stmt)
+	}
+
+	cla, ok := stmt.Expression.(*ast.ClassLiteral)
+
+	if cla.Name.Value != "TestClass" {
+		t.Errorf("stmt.Name.Value not TestClass. got=%s", cla.Name.Value)
+	}
+}

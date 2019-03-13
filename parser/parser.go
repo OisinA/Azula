@@ -66,6 +66,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
 	p.registerPrefix(token.FOR, p.parseForLoop)
+	p.registerPrefix(token.CLASS, p.parseClass)
 
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
@@ -172,6 +173,28 @@ func (p *Parser) parseReassignStatement() *ast.ReassignStatement {
 	}
 
 	return stmt
+}
+
+func (p *Parser) parseClass() ast.Expression {
+	cla := p.curToken
+	p.nextToken()
+	name := p.curToken
+
+	class := &ast.ClassLiteral{Token: cla, Name: &ast.Identifier{Token: name, Value: name.Literal}}
+
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+
+	class.Parameters = p.parseFunctionParameters()
+
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+
+	class.Body = p.parseBlockStatement()
+
+	return class
 }
 
 func (p *Parser) parseLetStatement() *ast.LetStatement {
