@@ -187,6 +187,11 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 	stmt.Value = p.parseExpression(LOWEST)
 
 	for !p.curTokenIs(token.SEMICOLON) {
+		if p.curTokenIs(token.EOF) {
+			msg := fmt.Sprintf("expected next token to be semicolon. none found.")
+			p.errors = append(p.errors, msg)
+			return nil
+		}
 		p.nextToken()
 	}
 
