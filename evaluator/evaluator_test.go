@@ -177,6 +177,7 @@ func TestLetStatements(t *testing.T) {
 	}{
 		{"int x = 5; x;", 5},
 		{"int x = 5 * 25; x;", 125},
+		{"int x = 5; x = 10; x;", 10},
 	}
 	for _, tt := range tests {
 		testIntegerObject(t, testEval(tt.input), tt.expected)

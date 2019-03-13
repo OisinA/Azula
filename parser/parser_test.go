@@ -734,3 +734,30 @@ func TestForLoopsExpression(t *testing.T) {
 		t.Fatalf("stmt not *ast.ExpressionStatement. got=%T", stmt.Expression)
 	}
 }
+
+func TestReassignStatement(t *testing.T) {
+	input := "i = 5;"
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ReassignStatement)
+	if !ok {
+		t.Errorf("stmt not *ast.ReassignStatement. got=%T", stmt)
+	}
+
+	if stmt.Name.Value != "i" {
+		t.Errorf("stmt.Name.Value not '%s'. got=%s", "i", stmt.Name.Value)
+	}
+
+	if stmt.Name.TokenLiteral() != "i" {
+		t.Errorf("stmt.Name is not '%s'. got=%s", "i", stmt.Name.TokenLiteral())
+	}
+}

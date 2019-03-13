@@ -56,6 +56,20 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return newError("trying to assign %s to %s: " + node.Name.Value, typeMap[val.Type()], node.Token.Literal)
 		}
 
+	case *ast.ReassignStatement:
+		val := Eval(node.Value, env)
+		if isError(val) {
+			return val
+		}
+		obj, ok := env.Get(node.Name.Value)
+		if !ok {
+			return newError("can't reassign value to non-existent variable '" + node.Name.Value + "'")
+		}
+		if typeMap[obj.Type()] != typeMap[val.Type()] {
+			return newError("can't assign value of type %s to variable of type %s", typeMap[obj.Type()], typeMap[val.Type()])
+		}
+		env.Overwrite(node.Name.Value, val)
+
 	// Expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}

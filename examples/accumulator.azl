@@ -1,0 +1,9 @@
+func accumulate(int x): int {
+	int acc = 0;
+	for(i in range(x)) {
+		acc = acc + i;
+	}
+	return acc;
+}
+
+print(accumulate(10));

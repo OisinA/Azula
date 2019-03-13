@@ -126,6 +126,12 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseLetStatement()
 	case token.RETURN:
 		return p.parseReturnStatement()
+	case token.IDENT:
+		if p.peekTokenIs(token.ASSIGN) {
+			return p.parseReassignStatement()
+		} else {
+			return p.parseExpressionStatement()
+		}
 	default:
 		return p.parseExpressionStatement()
 	}
@@ -152,6 +158,20 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 func (p *Parser) peekError(t token.TokenType) {
 	msg := fmt.Sprintf("expected next token to be %s, got %s (%s) instead", t, p.peekToken.Type, p.peekToken.Literal)
 	p.errors = append(p.errors, msg)
+}
+
+func (p *Parser) parseReassignStatement() *ast.ReassignStatement {
+	stmt := &ast.ReassignStatement{Token: p.curToken}
+	stmt.Name = &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+	p.nextToken()
+	p.nextToken()
+	stmt.Value = p.parseExpression(LOWEST)
+
+	if !p.expectPeek(token.SEMICOLON) {
+		return nil
+	}
+
+	return stmt
 }
 
 func (p *Parser) parseLetStatement() *ast.LetStatement {

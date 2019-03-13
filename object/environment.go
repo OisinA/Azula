@@ -29,3 +29,13 @@ func (e *Environment) Set(name string, val Object) Object {
 	e.store[name] = val
 	return val
 }
+
+func (e *Environment) Overwrite(name string, val Object) Object {
+	_, ok := e.store[name]
+	if !ok && e.outer != nil {
+		e.outer.Overwrite(name, val)
+	} else {
+		e.store[name] = val
+	}
+	return val
+}
