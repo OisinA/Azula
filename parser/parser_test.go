@@ -581,7 +581,7 @@ func TestIfExpression(t *testing.T) {
 }
 
 func TestFunctionLiteralParsing(t *testing.T) {
-	input := "func function(int x, int y): int { x + y; }"
+	input := "func function(int x, int y): void { x + y; }"
 
 	l := lexer.New(input)
 	p := New(l)
@@ -605,7 +605,7 @@ func TestFunctionLiteralParsing(t *testing.T) {
 	testLiteralExpression(t, function.Parameters[0], "x")
 	testLiteralExpression(t, function.Parameters[1], "y")
 
-	if function.ReturnType.Value != "int" {
+	if function.ReturnType.Value != "void" {
 		t.Fatalf("function return type wrong. got=%s", function.ReturnType.Value)
 	}
 

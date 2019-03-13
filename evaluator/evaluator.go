@@ -141,6 +141,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		case *object.Function:
 			fn = function.(*object.Function)
 			result := applyFunction(function, args)
+			if fn.ReturnType.Token.Literal == "void" {
+				return NULL
+			}
 			if typeMap[result.Type()] == fn.ReturnType.Token.Literal {
 				return result
 			} else {

@@ -6,6 +6,7 @@ const (
 
 	IDENT = "IDENT" //identifier (x, y)
 	INT   = "INT"   //integer
+	VOID = "VOID"
 
 	ASSIGN   = "="
 	PLUS     = "+"
@@ -67,6 +68,7 @@ var keywords = map[string]TokenType{
 	"else":   ELSE,
 	"for":    FOR,
 	"in":     IN,
+	"void":   VOID,
 }
 
 // LookupIdent checks the keywords table to see if identifier is a keyword
