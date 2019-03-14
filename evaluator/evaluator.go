@@ -193,6 +193,12 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 				return NULL
 			}
 			if typeMap[result.Type()] == fn.ReturnType.Token.Literal {
+				if fn.ReturnType.Token.Literal == "array" {
+					array := result.(*object.Array)
+					if array.ElementType != fn.ReturnType.Value {
+						return newError("function %s returned array(%s), not array(%s)", fn.Name.String(), array.ElementType, fn.ReturnType.Value)
+					}
+				}
 				return result
 			} else {
 				if result.Type() == object.CLASS_OBJ {
