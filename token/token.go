@@ -37,6 +37,7 @@ const (
 	CLASS = "CLASS"
 
 	STRING = "STRING"
+	IMPORT = "IMPORT"
 
 	TRUE  = "TRUE"
 	FALSE = "FALSE"
@@ -74,6 +75,7 @@ var keywords = map[string]TokenType{
 	"in":     IN,
 	"void":   VOID,
 	"class":  CLASS,
+	"import": IMPORT,
 }
 
 // LookupIdent checks the keywords table to see if identifier is a keyword

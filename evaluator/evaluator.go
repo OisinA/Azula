@@ -3,7 +3,10 @@ package evaluator
 import (
 	"github.com/OisinA/Azula/ast"
 	"github.com/OisinA/Azula/object"
+	"github.com/OisinA/Azula/lexer"
+	"github.com/OisinA/Azula/parser"
 	"fmt"
+	"io/ioutil"
 )
 
 var (
@@ -79,6 +82,26 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return newError("can't assign value of type %s to variable of type %s", typeMap[obj.Type()], typeMap[val.Type()])
 		}
 		env.Overwrite(node.Name.Value, val)
+
+	case *ast.ImportStatement:
+		val := Eval(node.Value, env)
+		v, ok := val.(*object.String)
+		if !ok {
+			return newError("invalid import path")
+		}
+		path := v.Value
+		dat, err := ioutil.ReadFile(path)
+		if err != nil {
+			return newError("couldn't import file '%s'", path)
+		}
+		l := lexer.New(string(dat))
+		p := parser.New(l)
+		program := p.ParseProgram()
+		if len(p.Errors()) != 0 {
+			return newError("something went wrong while importing '%s'", path)
+		}
+		Eval(program, env)
+		return NULL
 
 	// Expressions
 	case *ast.IntegerLiteral:

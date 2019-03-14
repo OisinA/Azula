@@ -830,3 +830,16 @@ func TestClassCall(t *testing.T) {
 	testLiteralExpression(t, exp.Arguments[0], 5)
 	testLiteralExpression(t, exp.Arguments[1], 10)
 }
+
+func TestImport(t *testing.T) {
+	input := `import "path/string.azl"`
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements does not contain %d statements.got=%d\n", 1, len(program.Statements))
+	}
+}

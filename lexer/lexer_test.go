@@ -46,6 +46,8 @@ func TestNextToken(t *testing.T) {
 
 	TestClass c = TestClass(1);
 	c.get_x();
+
+	import "path/string.azl";
 	`
 
 	tests := []struct {
@@ -184,6 +186,9 @@ func TestNextToken(t *testing.T) {
 		{token.IDENT, "get_x"},
 		{token.LPAREN, "("},
 		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
+		{token.IMPORT, "import"},
+		{token.STRING, "path/string.azl"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}

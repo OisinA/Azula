@@ -130,6 +130,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseLetStatement()
 	case token.RETURN:
 		return p.parseReturnStatement()
+	case token.IMPORT:
+		return p.parseImportStatement()
 	case token.IDENT:
 		if p.peekTokenIs(token.ASSIGN) {
 			return p.parseReassignStatement()
@@ -538,6 +540,17 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 	lit.Body = p.parseBlockStatement()
 
 	return lit
+}
+
+func (p *Parser) parseImportStatement() *ast.ImportStatement {
+	imp := p.curToken
+	p.nextToken()
+	str := p.parseStringLiteral()
+	stmt := &ast.ImportStatement{Token: imp, Value: str}
+	if !p.expectPeek(token.SEMICOLON) {
+		return nil
+	}
+	return stmt
 }
 
 func (p *Parser) parseStringLiteral() ast.Expression {
