@@ -516,7 +516,20 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 	}
 
 	p.nextToken()
-	lit.ReturnType = &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+	if p.curToken.Literal == "array" {
+		array := p.curToken
+		if !p.expectPeek(token.LPAREN) {
+			return nil
+		}
+		if !p.expectPeek(token.LET) {
+			return nil
+		}
+		arrayType := p.curToken
+		p.nextToken()
+		lit.ReturnType = &ast.Identifier{Token: array, Value: arrayType.Literal}
+	} else {
+		lit.ReturnType = &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+	}
 
 	if !p.expectPeek(token.LBRACE) {
 		return nil

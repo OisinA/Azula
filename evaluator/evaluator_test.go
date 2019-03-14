@@ -185,7 +185,7 @@ func TestLetStatements(t *testing.T) {
 }
 
 func TestFunctionObject(t *testing.T) {
-	input := "func function(int x): void { x + 2 };"
+	input := "func function(int x): array(int) { [1, 2, 3, 4]; };"
 
 	evaluated := testEval(input)
 	fn, ok := evaluated.(*object.Function)
@@ -197,7 +197,7 @@ func TestFunctionObject(t *testing.T) {
 		t.Fatalf("function has wrong parameters. Paramaters=%+v", fn.Parameters)
 	}
 
-	expectedBody := "(x + 2)"
+	expectedBody := "[1, 2, 3, 4]"
 
 	if fn.Body.String() != expectedBody {
 		t.Fatalf("body is not %q. got=%q", expectedBody, fn.Body.String())
@@ -209,7 +209,7 @@ func TestFunctionApplication(t *testing.T) {
 		input string
 		expected int64
 	}{
-		{"func identity(int x): int { return x; }; identity(5);", 5},
+		{"func identity(int x): array(int) { return range(x); }; len(identity(5));", 5},
 		{"func double(int x): int { return x * 2; }; double(5);", 10},
 	}
 	for _, tt := range tests {
