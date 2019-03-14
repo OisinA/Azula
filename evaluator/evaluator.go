@@ -195,6 +195,11 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			if typeMap[result.Type()] == fn.ReturnType.Token.Literal {
 				return result
 			} else {
+				if result.Type() == object.CLASS_OBJ {
+					if _, ok := env.Get(fn.ReturnType.Token.Literal); ok {
+						return result
+					}
+				}
 				return newError("function %s returned %s, not %s", fn.Name.String(), typeMap[result.Type()], fn.ReturnType.Token.Literal)
 			}
 		default:
