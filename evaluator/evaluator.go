@@ -49,9 +49,19 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 				return newError("trying to assign array %s to array %s: " + node.Name.Value, array.ElementType, node.Name.ReturnType.Value)
 			}
 			env.Set(node.Name.Value, val)
+			return NULL
+		}
+		if val.Type() == object.CLASS_OBJ {
+			class := val.(*object.Class)
+			if node.Token.Literal != class.Name.String() {
+				return newError("can't assign to type %s", node.Token.Literal)
+			}
+			env.Set(node.Name.Value, val)
+			return NULL
 		}
 		if typeMap[val.Type()] == node.Token.Literal {
 			env.Set(node.Name.Value, val)
+			return NULL
 		} else {
 			return newError("trying to assign %s to %s: " + node.Name.Value, typeMap[val.Type()], node.Token.Literal)
 		}
@@ -142,12 +152,36 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		env.Set(node.Name.Token.Literal, function)
 		return function
 
+	case *ast.ClassLiteral:
+		params := node.Parameters
+		body := node.Body
+		class := &object.Class{Name: node.Name, Parameters: params, Env: object.NewEnvironment(), Body: body}
+		env.Set(node.Name.Token.Literal, class)
+		return class
+
 	case *ast.CallExpression:
-		function := Eval(node.Function, env)
+		newEnv := env
+		if node.Outer != nil {
+			outer := node.Outer
+			classEnv, ok := env.Get(outer.TokenLiteral())
+			if !ok {
+				return newError("couldn't find object %s", outer.TokenLiteral())
+			}
+			class, ok := classEnv.(*object.Class)
+			if !ok {
+				return newError("'%s' is not a class", node.Function.TokenLiteral())
+			}
+			if class.Env != nil {
+				newEnv = class.Env
+			} else {
+				return newError("'%s' is not an object", node.Function.TokenLiteral())
+			}
+		}
+		function := Eval(node.Function, newEnv)
 		if isError(function) {
 			return function
 		}
-		args := evalExpressions(node.Arguments, env)
+		args := evalExpressions(node.Arguments, newEnv)
 		if len(args) == 1 && isError(args[0]) {
 			return args[0]
 		}
@@ -163,7 +197,6 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			} else {
 				return newError("function %s returned %s, not %s", fn.Name.String(), typeMap[result.Type()], fn.ReturnType.Token.Literal)
 			}
-
 		default:
 			return applyFunction(function, args)
 		}
@@ -405,6 +438,13 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 		return unwrapReturnValue(evaluated)
 	case *object.Builtin:
 		return fn.Fn(args...)
+	case *object.Class:
+		env := object.NewEnvironment()
+		for paramIdx, x := range fn.Parameters {
+			env.Set(x.Value, args[paramIdx])
+		}
+		Eval(fn.Body, env)
+		return &object.Class{Name: fn.Name, Body: fn.Body, Parameters: fn.Parameters, Env: env}
 	default:
 		return newError("not a function: %s", fn.Type())
 	}

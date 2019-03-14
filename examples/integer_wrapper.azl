@@ -1,0 +1,11 @@
+class Integer(int x) {
+	
+	func toInt(): int {
+		return x;
+	}
+
+}
+
+Integer myInt = Integer(5);
+
+print(myInt.toInt());

@@ -16,6 +16,7 @@ const (
 	SUM
 	PRODUCT
 	PREFIX
+	ACCESS
 	CALL
 	INDEX
 )
@@ -31,6 +32,7 @@ var precedences = map[token.TokenType]int{
 	token.ASTERISK: PRODUCT,
 	token.LPAREN:   CALL,
 	token.LBRACKET: INDEX,
+	token.ACCESS:   ACCESS,
 }
 
 type Parser struct {
@@ -66,6 +68,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
 	p.registerPrefix(token.FOR, p.parseForLoop)
+	p.registerPrefix(token.CLASS, p.parseClass)
 
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
@@ -78,6 +81,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.GT, p.parseInfixExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
+	p.registerInfix(token.ACCESS, p.parseNestedCallExpression)
 
 	p.nextToken()
 	p.nextToken()
@@ -129,6 +133,8 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.IDENT:
 		if p.peekTokenIs(token.ASSIGN) {
 			return p.parseReassignStatement()
+		}  else if p.peekTokenIs(token.IDENT) {
+			return p.parseLetStatement()
 		} else {
 			return p.parseExpressionStatement()
 		}
@@ -172,6 +178,28 @@ func (p *Parser) parseReassignStatement() *ast.ReassignStatement {
 	}
 
 	return stmt
+}
+
+func (p *Parser) parseClass() ast.Expression {
+	cla := p.curToken
+	p.nextToken()
+	name := p.curToken
+
+	class := &ast.ClassLiteral{Token: cla, Name: &ast.Identifier{Token: name, Value: name.Literal}}
+
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+
+	class.Parameters = p.parseFunctionParameters()
+
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+
+	class.Body = p.parseBlockStatement()
+
+	return class
 }
 
 func (p *Parser) parseLetStatement() *ast.LetStatement {
@@ -234,7 +262,6 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	stmt := &ast.ExpressionStatement{Token: p.curToken}
-
 	stmt.Expression = p.parseExpression(LOWEST)
 	if p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
@@ -289,6 +316,15 @@ func (p *Parser) parseForLoop() ast.Expression {
 	return &ast.ForLiteral{Token: f, Parameter: parameter, Iterator: iterator, Body: body}
 }
 
+func (p *Parser) parseNestedCallExpression(left ast.Expression) ast.Expression {
+	p.nextToken()
+	ident := p.parseIdentifier()
+	p.nextToken()
+	exp := p.parseCallExpression(ident).(*ast.CallExpression)
+	exp.Outer = left
+	return exp
+}
+
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	prefix := p.prefixParseFns[p.curToken.Type]
 	if prefix == nil {
@@ -304,7 +340,6 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		}
 
 		p.nextToken()
-
 		leftExp = infix(leftExp)
 	}
 

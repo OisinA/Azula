@@ -328,3 +328,37 @@ func TestForLoopExpressions(t *testing.T) {
 		testIntegerObject(t, evaluated, int64(tt.expected.(int)))
 	}
 }
+
+func TestClassLiterals(t *testing.T) {
+	input := "class TestClass(int x) { x = 10; }"
+
+	evaluated := testEval(input)
+	class, ok := evaluated.(*object.Class)
+	if !ok {
+		t.Fatalf("object is not Class. got=%T (%+v)", evaluated, evaluated)
+	}
+	if len(class.Parameters) != 1 {
+		t.Fatalf("class has wrong parameters. Parameters=%+v", class.Parameters)
+	}
+	if class.Body.String() != "x = 10;" {
+		t.Fatalf("body is not %q. got=%q", "x = 10", class.Body.String())
+	}
+}
+
+func TestClassCalls(t *testing.T) {
+	input := `
+	class TestClass(int x) {
+		func getx(): int {
+			return x;
+		}
+	}
+	TestClass c = TestClass(5);
+	c.getx();
+	`
+
+	evaluated := testEval(input)
+	_, ok := evaluated.(*object.Integer)
+	if !ok {
+		t.Fatalf("object is not Integer. got=%T (%+v)", evaluated, evaluated)
+	}
+}

@@ -12,6 +12,7 @@ func TestLetStatements(t *testing.T) {
 	int y = 10;
 	int foo = 1923;
 	array(int) numbers = [2, 3, 4];
+	TestClass c = TestClass(5);
 	`
 	l := lexer.New(input)
 	p := New(l)
@@ -21,7 +22,7 @@ func TestLetStatements(t *testing.T) {
 	if program == nil {
 		t.Fatalf("ParseProgram() returned nil")
 	}
-	if len(program.Statements) != 4 {
+	if len(program.Statements) != 5 {
 		t.Fatalf("program.Statements does not have 4 statements. got %d", len(program.Statements))
 	}
 
@@ -32,6 +33,7 @@ func TestLetStatements(t *testing.T) {
 		{"y"},
 		{"foo"},
 		{"numbers"},
+		{"c"},
 	}
 
 	for i, tt := range tests {
@@ -622,7 +624,7 @@ func TestFunctionLiteralParsing(t *testing.T) {
 }
 
 func TestCallExpressionParsing(t *testing.T) {
-	input := "add(1, 2 * 3, 4 + 5);"
+	input := "c.add(1, 2 * 3, 4 + 5);"
 
 	l := lexer.New(input)
 	p := New(l)
@@ -644,6 +646,10 @@ func TestCallExpressionParsing(t *testing.T) {
 	}
 
 	if !testIdentifier(t, exp.Function, "add") {
+		return
+	}
+
+	if !testIdentifier(t, exp.Outer, "c") {
 		return
 	}
 
@@ -760,4 +766,67 @@ func TestReassignStatement(t *testing.T) {
 	if stmt.Name.TokenLiteral() != "i" {
 		t.Errorf("stmt.Name is not '%s'. got=%s", "i", stmt.Name.TokenLiteral())
 	}
+}
+
+func TestClassLiteral(t *testing.T) {
+	input := `class TestClass(int x, int y) {
+		func get_x(): int {
+			return x;
+		}
+	}`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("stmt not *ast.ClassLiteral. got=%T", stmt)
+	}
+
+	cla, ok := stmt.Expression.(*ast.ClassLiteral)
+
+	if cla.Name.Value != "TestClass" {
+		t.Errorf("stmt.Name.Value not TestClass. got=%s", cla.Name.Value)
+	}
+}
+
+func TestClassCall(t *testing.T) {
+	input := "TestClass(5, 10);"
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements does not contain %d statements. got=%d\n", 1, len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("stmt is not ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
+
+	exp, ok := stmt.Expression.(*ast.CallExpression)
+	if !ok {
+		t.Fatalf("stmt.Expression is not ast.ClassCallExpression. got=%T", stmt.Expression)
+	}
+
+	if !testIdentifier(t, exp.Function, "TestClass") {
+		return
+	}
+
+	if len(exp.Arguments) != 2 {
+		t.Fatalf("wrong length of arguments. got=%d", len(exp.Arguments))
+	}
+
+	testLiteralExpression(t, exp.Arguments[0], 5)
+	testLiteralExpression(t, exp.Arguments[1], 10)
 }
