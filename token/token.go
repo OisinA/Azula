@@ -43,6 +43,8 @@ const (
 	IF    = "IF"
 	ELSE  = "ELSE"
 
+	ACCESS = "."
+
 	LBRACKET = "["
 	RBRACKET = "]"
 

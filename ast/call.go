@@ -8,6 +8,7 @@ import (
 
 type CallExpression struct {
 	Token     token.Token
+	Outer     Expression
 	Function  Expression
 	Arguments []Expression
 }
@@ -25,7 +26,9 @@ func (ce *CallExpression) String() string {
 	for _, a := range ce.Arguments {
 		args = append(args, a.String())
 	}
-
+	if ce.Outer != nil {
+		out.WriteString(ce.Outer.String())
+	}
 	out.WriteString(ce.Function.String())
 	out.WriteString("(")
 	out.WriteString(strings.Join(args, ", "))

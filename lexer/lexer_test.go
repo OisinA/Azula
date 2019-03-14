@@ -43,6 +43,9 @@ func TestNextToken(t *testing.T) {
 			return x;
 		}
 	}
+
+	TestClass c = TestClass(1);
+	c.get_x();
 	`
 
 	tests := []struct {
@@ -168,6 +171,20 @@ func TestNextToken(t *testing.T) {
 		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
 		{token.RBRACE, "}"},
+		{token.IDENT, "TestClass"},
+		{token.IDENT, "c"},
+		{token.ASSIGN, "="},
+		{token.IDENT, "TestClass"},
+		{token.LPAREN, "("},
+		{token.INT, "1"},
+		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
+		{token.IDENT, "c"},
+		{token.ACCESS, "."},
+		{token.IDENT, "get_x"},
+		{token.LPAREN, "("},
+		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
 
