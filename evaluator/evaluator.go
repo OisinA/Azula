@@ -1,8 +1,8 @@
 package evaluator
 
 import (
-	"azula/ast"
-	"azula/object"
+	"github.com/OisinA/Azula/ast"
+	"github.com/OisinA/Azula/object"
 	"fmt"
 )
 

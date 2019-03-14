@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"azula/token"
+	"github.com/OisinA/Azula/token"
 )
 
 type Boolean struct {

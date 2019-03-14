@@ -1,9 +1,9 @@
 package evaluator
 
 import (
-	"azula/lexer"
-	"azula/object"
-	"azula/parser"
+	"github.com/OisinA/Azula/lexer"
+	"github.com/OisinA/Azula/object"
+	"github.com/OisinA/Azula/parser"
 	"testing"
 )
 

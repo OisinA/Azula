@@ -3,7 +3,7 @@ package lexer
 import (
 	"testing"
 
-	"azula/token"
+	"github.com/OisinA/Azula/token"
 )
 
 func TestNextToken(t *testing.T) {

@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"azula/ast"
-	"azula/lexer"
+	"github.com/OisinA/Azula/ast"
+	"github.com/OisinA/Azula/lexer"
 	"fmt"
 	"testing"
 )

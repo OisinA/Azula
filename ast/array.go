@@ -3,7 +3,7 @@ package ast
 import (
 	"bytes"
 	"strings"
-	"azula/token"
+	"github.com/OisinA/Azula/token"
 )
 
 type ArrayLiteral struct {

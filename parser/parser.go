@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"azula/ast"
-	"azula/lexer"
-	"azula/token"
+	"github.com/OisinA/Azula/ast"
+	"github.com/OisinA/Azula/lexer"
+	"github.com/OisinA/Azula/token"
 	"fmt"
 	"strconv"
 )

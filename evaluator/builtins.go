@@ -1,7 +1,7 @@
 package evaluator
 
 import (
-	"azula/object"
+	"github.com/OisinA/Azula/object"
 	"fmt"
 	"bufio"
 	"os"
@@ -88,6 +88,23 @@ var builtins = map[string]*object.Builtin {
 			array := &object.Array{ElementType: "int", Elements: []object.Object{}}
 			for i := lower; i < higher; i++ {
 				array.Elements = append(array.Elements, &object.Integer{Value: int64(i)})
+			}
+			return array
+		},
+	},
+	"string_to_list": &object.Builtin {
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%q", len(args))
+			}
+
+			s, ok := args[0].(*object.String)
+			if !ok {
+				return newError("cannot convert %v to string", args[0])
+			}
+			array := &object.Array{ElementType: "string", Elements: []object.Object{}}
+			for _, c := range s.Value {
+				array.Elements = append(array.Elements, &object.String{Value: string(c)})
 			}
 			return array
 		},

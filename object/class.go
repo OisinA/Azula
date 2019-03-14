@@ -1,7 +1,7 @@
 package object
 
 import (
-	"azula/ast"
+	"github.com/OisinA/Azula/ast"
 	"bytes"
 	"strings"
 )

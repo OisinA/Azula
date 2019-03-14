@@ -1,10 +1,10 @@
 package repl
 
 import (
-	"azula/lexer"
-	"azula/parser"
-	"azula/evaluator"
-	"azula/object"
+	"github.com/OisinA/Azula/lexer"
+	"github.com/OisinA/Azula/parser"
+	"github.com/OisinA/Azula/evaluator"
+	"github.com/OisinA/Azula/object"
 	"bufio"
 	"fmt"
 	"io"

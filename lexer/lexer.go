@@ -1,7 +1,7 @@
 package lexer
 
 import (
-	"azula/token"
+	"github.com/OisinA/Azula/token"
 )
 
 type Lexer struct {
