@@ -43,7 +43,7 @@ var builtins = map[string]*object.Builtin {
 			return &object.String{Value: strings.TrimSpace(string(text))}
 		},
 	},
-	"toInt": &object.Builtin {
+	"to_int": &object.Builtin {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%q, want 1", len(args))
@@ -107,6 +107,27 @@ var builtins = map[string]*object.Builtin {
 				array.Elements = append(array.Elements, &object.String{Value: string(c)})
 			}
 			return array
+		},
+	},
+	"append": &object.Builtin {
+                Fn: func(args ...object.Object) object.Object {
+                        if len(args) != 2 {
+                                return newError("wrong number of arguments. got=%q", len(args))
+                        }
+                        l, ok := args[0].(*object.Array)
+                        if !ok {
+                                return newError("cannot convert %v to array", args[0])
+                        }
+
+                        return &object.Array{ElementType: l.ElementType, Elements: append(l.Elements, args[1])}
+                },
+        },
+	"type": &object.Builtin {
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) == 1 {
+				return &object.String{Value: typeMap[args[0].Type()]}
+			}
+			return NULL
 		},
 	},
 }
