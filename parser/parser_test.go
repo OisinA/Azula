@@ -1,10 +1,11 @@
 package parser
 
 import (
-	"github.com/OisinA/Azula/ast"
-	"github.com/OisinA/Azula/lexer"
 	"fmt"
 	"testing"
+
+	"github.com/OisinA/Azula/ast"
+	"github.com/OisinA/Azula/lexer"
 )
 
 func TestLetStatements(t *testing.T) {
@@ -832,7 +833,7 @@ func TestClassCall(t *testing.T) {
 }
 
 func TestImport(t *testing.T) {
-	input := `import "path/string.azl"`
+	input := `import "path/string.azl";`
 	l := lexer.New(input)
 	p := New(l)
 

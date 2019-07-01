@@ -1,0 +1,11 @@
+class String(string s) {
+
+    func split(): array(string) {
+        return string_to_list(s);
+    }
+
+    func native(): string {
+        return s;
+    }    
+
+}

@@ -1,24 +1,25 @@
 package evaluator
 
 import (
-	"github.com/OisinA/Azula/ast"
-	"github.com/OisinA/Azula/object"
-	"github.com/OisinA/Azula/lexer"
-	"github.com/OisinA/Azula/parser"
 	"fmt"
 	"io/ioutil"
+
+	"github.com/OisinA/Azula/ast"
+	"github.com/OisinA/Azula/lexer"
+	"github.com/OisinA/Azula/object"
+	"github.com/OisinA/Azula/parser"
 )
 
 var (
-	TRUE = &object.Boolean{Value: true}
+	TRUE  = &object.Boolean{Value: true}
 	FALSE = &object.Boolean{Value: false}
-	NULL = &object.Null{}
+	NULL  = &object.Null{}
 
-	typeMap = map[object.ObjectType]string {
+	typeMap = map[object.ObjectType]string{
 		object.INTEGER_OBJ: "int",
 		object.BOOLEAN_OBJ: "bool",
-		object.STRING_OBJ: "string",
-		object.ARRAY_OBJ: "array",
+		object.STRING_OBJ:  "string",
+		object.ARRAY_OBJ:   "array",
 	}
 )
 
@@ -49,7 +50,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if val.Type() == object.ARRAY_OBJ {
 			array := val.(*object.Array)
 			if node.Name.ReturnType.Value != array.ElementType {
-				return newError("trying to assign array %s to array %s: " + node.Name.Value, array.ElementType, node.Name.ReturnType.Value)
+				return newError("trying to assign array %s to array %s: "+node.Name.Value, array.ElementType, node.Name.ReturnType.Value)
 			}
 			env.Set(node.Name.Value, val)
 			return NULL
@@ -66,7 +67,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			env.Set(node.Name.Value, val)
 			return NULL
 		} else {
-			return newError("trying to assign %s to %s: " + node.Name.Value, typeMap[val.Type()], node.Token.Literal)
+			return newError("trying to assign %s to %s: "+node.Name.Value, typeMap[val.Type()], node.Token.Literal)
 		}
 
 	case *ast.ReassignStatement:
@@ -329,10 +330,7 @@ func evalInfixExpression(operator string, left object.Object, right object.Objec
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(operator, left, right)
 	case operator == "==":
-		if left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ {
-			return nativeBoolToBooleanObject((left.(*object.String)).Value == (right.(*object.String)).Value)
-		}
-		return nativeBoolToBooleanObject(left == right)
+		return nativeBoolToBooleanObject(object.Equality(&left, &right))
 	case operator == "!=":
 		return nativeBoolToBooleanObject(left != right)
 	case left.Type() != right.Type() && operator != "+":
@@ -434,7 +432,7 @@ func evalArrayIndexExpression(array, index object.Object) object.Object {
 	}
 
 	if idx < 0 {
-		idx = int64(len(arrayObject.Elements))+idx
+		idx = int64(len(arrayObject.Elements)) + idx
 	}
 
 	return arrayObject.Elements[idx]
@@ -463,7 +461,7 @@ func isTruthy(obj object.Object) bool {
 	case FALSE:
 		return false
 	default:
-		return true
+		return false
 	}
 }
 

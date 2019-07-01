@@ -1,16 +1,17 @@
 package evaluator
 
 import (
-	"github.com/OisinA/Azula/object"
-	"fmt"
 	"bufio"
+	"fmt"
 	"os"
-	"strings"
 	"strconv"
+	"strings"
+
+	"github.com/OisinA/Azula/object"
 )
 
-var builtins = map[string]*object.Builtin {
-	"len": &object.Builtin {
+var builtins = map[string]*object.Builtin{
+	"len": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%q, want=1", len(args))
@@ -26,7 +27,7 @@ var builtins = map[string]*object.Builtin {
 			}
 		},
 	},
-	"input": &object.Builtin {
+	"input": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) > 1 {
 				return newError("wrong number of arguments. got=%q, want <= 1", len(args))
@@ -43,7 +44,7 @@ var builtins = map[string]*object.Builtin {
 			return &object.String{Value: strings.TrimSpace(string(text))}
 		},
 	},
-	"to_int": &object.Builtin {
+	"to_int": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%q, want 1", len(args))
@@ -55,7 +56,7 @@ var builtins = map[string]*object.Builtin {
 			return &object.Integer{Value: int64(i)}
 		},
 	},
-	"print": &object.Builtin {
+	"print": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%q, want 1", len(args))
@@ -64,7 +65,7 @@ var builtins = map[string]*object.Builtin {
 			return NULL
 		},
 	},
-	"range": &object.Builtin {
+	"range": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			lower := int64(0)
 			higher := int64(0)
@@ -92,7 +93,7 @@ var builtins = map[string]*object.Builtin {
 			return array
 		},
 	},
-	"string_to_list": &object.Builtin {
+	"string_to_list": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%q", len(args))
@@ -109,25 +110,45 @@ var builtins = map[string]*object.Builtin {
 			return array
 		},
 	},
-	"append": &object.Builtin {
-                Fn: func(args ...object.Object) object.Object {
-                        if len(args) != 2 {
-                                return newError("wrong number of arguments. got=%q", len(args))
-                        }
-                        l, ok := args[0].(*object.Array)
-                        if !ok {
-                                return newError("cannot convert %v to array", args[0])
-                        }
+	"append": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 2 {
+				return newError("wrong number of arguments. got=%q", len(args))
+			}
+			l, ok := args[0].(*object.Array)
+			if !ok {
+				return newError("cannot convert %v to array", args[0])
+			}
 
-                        return &object.Array{ElementType: l.ElementType, Elements: append(l.Elements, args[1])}
-                },
-        },
-	"type": &object.Builtin {
+			return &object.Array{ElementType: l.ElementType, Elements: append(l.Elements, args[1])}
+		},
+	},
+	"type": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) == 1 {
 				return &object.String{Value: typeMap[args[0].Type()]}
 			}
 			return NULL
+		},
+	},
+	"item_in": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 2 {
+				return newError("wrong number of arguments. got=%q", len(args))
+			}
+			s, ok := args[1].(*object.Array)
+			if !ok {
+				return newError("cannot convert %v to array", args[1])
+			}
+			if s.ElementType != typeMap[args[0].Type()] {
+				return newError("cannot convert %v to array element", args[0])
+			}
+			for _, i := range s.Elements {
+				if object.Equality(&i, &args[0]) {
+					return &object.Boolean{true}
+				}
+			}
+			return &object.Boolean{false}
 		},
 	},
 }

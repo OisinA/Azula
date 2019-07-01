@@ -1,11 +1,12 @@
 package parser
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/OisinA/Azula/ast"
 	"github.com/OisinA/Azula/lexer"
 	"github.com/OisinA/Azula/token"
-	"fmt"
-	"strconv"
 )
 
 const (
@@ -135,7 +136,7 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.IDENT:
 		if p.peekTokenIs(token.ASSIGN) {
 			return p.parseReassignStatement()
-		}  else if p.peekTokenIs(token.IDENT) {
+		} else if p.peekTokenIs(token.IDENT) {
 			return p.parseLetStatement()
 		} else {
 			return p.parseExpressionStatement()
@@ -157,10 +158,9 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 	if p.peekTokenIs(t) {
 		p.nextToken()
 		return true
-	} else {
-		p.peekError(t)
-		return false
 	}
+	p.peekError(t)
+	return false
 }
 
 func (p *Parser) peekError(t token.TokenType) {
