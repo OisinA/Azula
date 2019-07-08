@@ -49,6 +49,10 @@ func TestNextToken(t *testing.T) {
 	c.get_x();
 
 	import "path/string.azl";
+
+	error err = _"error"_;
+
+	map(int, string) my_map = {12=>"twelve", 14=>"fourteen"};
 	`
 
 	tests := []struct {
@@ -190,6 +194,33 @@ func TestNextToken(t *testing.T) {
 		{token.SEMICOLON, ";"},
 		{token.IMPORT, "import"},
 		{token.STRING, "path/string.azl"},
+		{token.SEMICOLON, ";"},
+		{token.LET, "error"},
+		{token.IDENT, "err"},
+		{token.ASSIGN, "="},
+		{token.UNDERSCORE, "_"},
+		{token.STRING, "error"},
+		{token.UNDERSCORE, "_"},
+		{token.SEMICOLON, ";"},
+		{token.LET, "map"},
+		{token.LPAREN, "("},
+		{token.LET, "int"},
+		{token.COMMA, ","},
+		{token.LET, "string"},
+		{token.RPAREN, ")"},
+		{token.IDENT, "my_map"},
+		{token.ASSIGN, "="},
+		{token.LBRACE, "{"},
+		{token.INT, "12"},
+		{token.ASSIGN, "="},
+		{token.GT, ">"},
+		{token.STRING, "twelve"},
+		{token.COMMA, ","},
+		{token.INT, "14"},
+		{token.ASSIGN, "="},
+		{token.GT, ">"},
+		{token.STRING, "fourteen"},
+		{token.RBRACE, "}"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}

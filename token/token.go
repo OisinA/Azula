@@ -66,6 +66,8 @@ const (
 	COLON = ":"
 	// ACCESS - access identifier inside identifier
 	ACCESS = "ACCESS"
+	// UNDERSCORE - used to create errors
+	UNDERSCORE = "_"
 
 	// FUNCTION - function definition
 	FUNCTION = "FUNCTION"
@@ -106,6 +108,8 @@ var keywords = map[string]Type{
 	"bool":   LET,
 	"string": LET,
 	"array":  LET,
+	"error":  LET,
+	"map":    LET,
 
 	"void": VOID,
 
