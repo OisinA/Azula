@@ -1,16 +1,16 @@
 package tests
 
 import (
+	"azula/evaluator"
 	"azula/lexer"
 	"azula/object"
 	"azula/parser"
-	"azula/evaluator"
 	"testing"
 )
 
 func TestEvalIntegerExpression(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected int64
 	}{
 		{"5", 5},
@@ -50,7 +50,7 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 
 func TestEvalBooleanExpression(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected bool
 	}{
 		{"true", true},
@@ -80,7 +80,7 @@ func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
 
 func TestBangOperator(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected bool
 	}{
 		{"!true", false},
@@ -97,7 +97,7 @@ func TestBangOperator(t *testing.T) {
 
 func TestIfElseExpressions(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected interface{}
 	}{
 		{"if(true) { 10 }", 10},
@@ -124,7 +124,7 @@ func testNullObject(t *testing.T, obj object.Object) bool {
 
 func TestEvalReturnStatements(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected int64
 	}{
 		{"return 10;", 10},
@@ -139,7 +139,7 @@ func TestEvalReturnStatements(t *testing.T) {
 
 func TestErrorHandling(t *testing.T) {
 	tests := []struct {
-		input string
+		input           string
 		expectedMessage string
 	}{
 		{
@@ -173,7 +173,7 @@ func TestErrorHandling(t *testing.T) {
 
 func TestEvalLetStatements(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected int64
 	}{
 		{"int x = 5; x;", 5},
@@ -187,7 +187,7 @@ func TestEvalLetStatements(t *testing.T) {
 
 func TestEvalErrorStatements(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected string
 	}{
 		{"error x = _\"error\"_; x;", "error"},
@@ -226,7 +226,7 @@ func TestFunctionObject(t *testing.T) {
 
 func TestFunctionApplication(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected int64
 	}{
 		{"func identity(int x): int { return x; }; identity(5);", 5},
@@ -267,7 +267,7 @@ func TestStringConcatenation(t *testing.T) {
 
 func TestBuiltinFunctions(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected interface{}
 	}{
 		{`len("")`, 0},
@@ -310,7 +310,7 @@ func TestArrayLiterals(t *testing.T) {
 
 func TestArrayIndexExpressions(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected interface{}
 	}{
 		{
@@ -335,7 +335,7 @@ func TestArrayIndexExpressions(t *testing.T) {
 
 func TestForLoopExpressions(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected interface{}
 	}{
 		{
@@ -388,9 +388,9 @@ func TestHashLiterals(t *testing.T) {
 	string two = "two";
 	{
 		"one"=>10-9,
-		two=>1 + 1,
+		"two"=>1 + 1,
 		"thr" + "ee"=>6 / 2,
-		4=>4,
+		"4"=>4,
 	};
 	`
 	evaluated := testEval(input)
@@ -399,10 +399,10 @@ func TestHashLiterals(t *testing.T) {
 		t.Fatalf("Eval didn't return Hash. got=%T (%+v)", evaluated, evaluated)
 	}
 	expected := map[object.HashKey]int64{
-		(&object.String{Value: "one"}).HashKey(): 1,
-		(&object.String{Value: "two"}).HashKey(): 2,
+		(&object.String{Value: "one"}).HashKey():   1,
+		(&object.String{Value: "two"}).HashKey():   2,
 		(&object.String{Value: "three"}).HashKey(): 3,
-		(&object.Integer{Value: 4}).HashKey(): 4,
+		(&object.String{Value: "4"}).HashKey():     4,
 	}
 	if len(result.Pairs) != len(expected) {
 		t.Fatalf("Hash has wrong num of pairs. got=%d", len(result.Pairs))
@@ -416,9 +416,23 @@ func TestHashLiterals(t *testing.T) {
 	}
 }
 
+func TestEmptyHashLiteral(t *testing.T) {
+	input := `
+	{};
+	`
+	evaluated := testEval(input)
+	result, ok := evaluated.(*object.Hash)
+	if !ok {
+		t.Fatalf("Eval didn't return Hash. got=%T (%+v)", evaluated, evaluated)
+	}
+	if len(result.Pairs) != 0 {
+		t.Fatalf("Hash has wrong num of pairs. got=%d", len(result.Pairs))
+	}
+}
+
 func TestHashIndexExpressions(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected interface{}
 	}{
 		{

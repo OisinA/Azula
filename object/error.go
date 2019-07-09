@@ -1,7 +1,13 @@
 package object
 
+import (
+	"fmt"
+)
+
 type Error struct {
-	Message string
+	Message    string
+	LineNumber int
+	ColNumber  int
 }
 
 func (e *Error) Type() Type {
@@ -9,5 +15,5 @@ func (e *Error) Type() Type {
 }
 
 func (e *Error) Inspect() string {
-	return "ERROR: " + e.Message
+	return "ERROR: " + e.Message + "(" + fmt.Sprint(e.LineNumber) + ", " + fmt.Sprint(e.ColNumber) + ")"
 }

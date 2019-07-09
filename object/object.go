@@ -5,29 +5,29 @@ type Type string
 
 const (
 	// IntegerObj - int
-	IntegerObj      = "INTEGER"
+	IntegerObj = "INTEGER"
 	// BooleanObj - bool
-	BooleanObj      = "BOOLEAN"
+	BooleanObj = "BOOLEAN"
 	// NullObj - null
-	NullObj         = "NULL"
+	NullObj = "NULL"
 	// ReturnValueObj - return value
 	ReturnValueObj = "RETURN_VALUE"
 	// ErrorObj - error
-	ErrorObj        = "ERROR"
+	ErrorObj = "ERROR"
 	// FunctionObj - function
-	FunctionObj     = "FUNCTION"
+	FunctionObj = "FUNCTION"
 	// StringObj - string
-	StringObj       = "STRING"
+	StringObj = "STRING"
 	// ArrayObj - array
-	ArrayObj        = "ARRAY"
+	ArrayObj = "ARRAY"
 	// BuiltinObj - builtin function
-	BuiltinObj      = "BUILTIN"
+	BuiltinObj = "BUILTIN"
 	// ForObj - for
-	ForObj          = "FOR"
+	ForObj = "FOR"
 	// ClassObj - class
-	ClassObj        = "CLASS"
+	ClassObj = "CLASS"
 	// HashObj - maps
-	HashObj         = "HASH"
+	HashObj = "HASH"
 )
 
 // Object is azula object
@@ -50,6 +50,12 @@ func Equality(obj1 *Object, obj2 *Object) bool {
 		str1 := ((*obj1).(*String))
 		str2 := ((*obj2).(*String))
 		return str1.Value == str2.Value
+	case NullObj:
+		_, ok := (*obj2).(*Null)
+		if ok {
+			return true
+		}
+		return false
 	default:
 		return obj1 == obj2
 	}
@@ -58,6 +64,6 @@ func Equality(obj1 *Object, obj2 *Object) bool {
 type BuiltinFunction func(args ...Object) Object
 
 type HashKey struct {
-	Type Type
+	Type  Type
 	Value uint64
 }

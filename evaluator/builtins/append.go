@@ -29,8 +29,12 @@ func FunctionAppend(args ...object.Object) object.Object {
 			return &object.Error{Message: "unusable as hash key"}
 		}
 
-		if i.KeyType != typeMap[key.Type()] {
-			return &object.Error{Message: "cannot assign to incorrect map type"}
+		if i.KeyType == "" {
+			i.KeyType = typeMap[key.Type()]
+		} else {
+			if i.KeyType != typeMap[key.Type()] {
+				return &object.Error{Message: "cannot assign to incorrect map type"}
+			}
 		}
 
 		value := args[2]

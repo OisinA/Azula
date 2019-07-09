@@ -849,7 +849,7 @@ func TestImport(t *testing.T) {
 }
 
 func TestParsingHashLiteral(t *testing.T) {
-	input := `{"one"=>1, "two"=>2, "three"=>3};`
+	input := `{"one"=>1, "two"=>2, "three"=>3}; {};`
 
 	l := lexer.New(input)
 	p := parser.New(l)
@@ -857,6 +857,7 @@ func TestParsingHashLiteral(t *testing.T) {
 	checkParserErrors(t, p)
 
 	stmt := program.Statements[0].(*ast.ExpressionStatement)
+	_ = program.Statements[1].(*ast.ExpressionStatement)
 	hash, ok := stmt.Expression.(*ast.HashLiteral)
 	if !ok {
 		t.Fatalf("exp is not ast.HashLiteral. got=%T", stmt.Expression)
@@ -865,8 +866,8 @@ func TestParsingHashLiteral(t *testing.T) {
 		t.Errorf("hash.Pairs has wrong length. got=%d", len(hash.Pairs))
 	}
 	expected := map[string]int64{
-		"one": 1,
-		"two": 2,
+		"one":   1,
+		"two":   2,
 		"three": 3,
 	}
 	for key, value := range hash.Pairs {

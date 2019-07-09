@@ -2,7 +2,9 @@ package object
 
 func NewEnvironment() *Environment {
 	s := make(map[string]Object)
-	return &Environment{store: s, outer: nil}
+	env := &Environment{store: s, outer: nil}
+	env.Set("null", &Null{})
+	return env
 }
 
 func NewEnclosedEnvironment(outer *Environment) *Environment {

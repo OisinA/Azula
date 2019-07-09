@@ -5,10 +5,10 @@ import (
 	"io/ioutil"
 
 	"azula/ast"
+	"azula/evaluator/builtins"
 	"azula/lexer"
 	"azula/object"
 	"azula/parser"
-	"azula/evaluator/builtins"
 )
 
 var (
@@ -65,8 +65,10 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		if val.Type() == object.HashObj {
 			hash := val.(*object.Hash)
-			if node.Name.ReturnType.Value != hash.KeyType {
-				return newError("trying to assign key %s to map %s: "+node.Name.Value, hash.KeyType, node.Name.ReturnType.Value)
+			if len(hash.Pairs) > 0 {
+				if node.Name.ReturnType.Value != hash.KeyType {
+					return newError("trying to assign key %s to map %s: "+node.Name.Value, hash.KeyType, node.Name.ReturnType.Value)
+				}
 			}
 			env.Set(node.Name.Value, val)
 			return NULL
