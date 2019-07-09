@@ -1,0 +1,4 @@
+map(string, int) age = {
+	"Oisin" => 400,
+	"No" => 9000,
+};
