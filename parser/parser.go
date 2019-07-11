@@ -318,12 +318,6 @@ func (p *Parser) parseForLoop() ast.Expression {
 		return nil
 	}
 	p.nextToken()
-	parameter := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
-
-	if !p.expectPeek(token.IN) {
-		return nil
-	}
-	p.nextToken()
 
 	iterator := p.parseExpression(lowest)
 	if !p.expectPeek(token.RPAREN) {
@@ -335,7 +329,7 @@ func (p *Parser) parseForLoop() ast.Expression {
 
 	body := p.parseBlockStatement()
 
-	return &ast.ForLiteral{Token: f, Parameter: parameter, Iterator: iterator, Body: body}
+	return &ast.ForLiteral{Token: f, Iterator: iterator, Body: body}
 }
 
 func (p *Parser) parseNestedCallExpression(left ast.Expression) ast.Expression {

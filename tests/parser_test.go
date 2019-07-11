@@ -15,7 +15,7 @@ func TestLetStatements(t *testing.T) {
 	int foo = 1923;
 	array(int) numbers = [2, 3, 4];
 	TestClass c = TestClass(5);
-	error err = >"error"<;
+	error err = _"error"_;
 	`
 	l := lexer.New(input)
 	p := parser.New(l)
@@ -731,19 +731,19 @@ func TestParsingIndexExpressions(t *testing.T) {
 	}
 }
 
-func TestForLoopsExpression(t *testing.T) {
-	input := "for(p in x) { int i = i + p; }"
+// func TestForLoopsExpression(t *testing.T) {
+// 	input := "for(p in x) { int i = i + p; }"
 
-	l := lexer.New(input)
-	p := parser.New(l)
-	program := p.ParseProgram()
-	checkParserErrors(t, p)
+// 	l := lexer.New(input)
+// 	p := parser.New(l)
+// 	program := p.ParseProgram()
+// 	checkParserErrors(t, p)
 
-	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
-	if !ok {
-		t.Fatalf("stmt not *ast.ExpressionStatement. got=%T", stmt.Expression)
-	}
-}
+// 	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+// 	if !ok {
+// 		t.Fatalf("stmt not *ast.ExpressionStatement. got=%T", stmt.Expression)
+// 	}
+// }
 
 func TestReassignStatement(t *testing.T) {
 	input := "i = 5;"

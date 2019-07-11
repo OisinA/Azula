@@ -333,21 +333,21 @@ func TestArrayIndexExpressions(t *testing.T) {
 	}
 }
 
-func TestForLoopExpressions(t *testing.T) {
-	tests := []struct {
-		input    string
-		expected interface{}
-	}{
-		{
-			"int i = 0; for(x in [1, 2, 3, 4]) { x; }",
-			4,
-		},
-	}
-	for _, tt := range tests {
-		evaluated := testEval(tt.input)
-		testIntegerObject(t, evaluated, int64(tt.expected.(int)))
-	}
-}
+// func TestForLoopExpressions(t *testing.T) {
+// 	tests := []struct {
+// 		input    string
+// 		expected interface{}
+// 	}{
+// 		{
+// 			"int i = 0; for(x in [1, 2, 3, 4]) { x; }",
+// 			4,
+// 		},
+// 	}
+// 	for _, tt := range tests {
+// 		evaluated := testEval(tt.input)
+// 		testIntegerObject(t, evaluated, int64(tt.expected.(int)))
+// 	}
+// }
 
 func TestClassLiterals(t *testing.T) {
 	input := "class TestClass(int x) { x = 10; }"

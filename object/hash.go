@@ -1,9 +1,9 @@
 package object
 
 import (
-	"strings"
 	"bytes"
 	"fmt"
+	"strings"
 )
 
 type Hashable interface {
@@ -11,13 +11,13 @@ type Hashable interface {
 }
 
 type HashPair struct {
-	Key Object
+	Key   Object
 	Value Object
 }
 
 type Hash struct {
-	Pairs map[HashKey]HashPair
-	KeyType string
+	Pairs     map[HashKey]HashPair
+	KeyType   string
 	ValueType string
 }
 
@@ -31,7 +31,7 @@ func (h *Hash) Inspect() string {
 	pairs := []string{}
 
 	for _, pair := range h.Pairs {
-		pairs = append(pairs, fmt.Sprintf("%s: %s", pair.Key.Inspect(), pair.Value.Inspect()))
+		pairs = append(pairs, fmt.Sprintf("%s=>%s", pair.Key.Inspect(), pair.Value.Inspect()))
 	}
 
 	out.WriteString("{")

@@ -7,7 +7,6 @@ import (
 
 type ForLiteral struct {
 	Token token.Token
-	Parameter *Identifier
 	Iterator Expression
 	Body *BlockStatement
 }
@@ -23,8 +22,6 @@ func (fl *ForLiteral) String() string {
 
 	out.WriteString(fl.TokenLiteral())
 	out.WriteString("(")
-	out.WriteString(fl.Parameter.String())
-	out.WriteString("in")
 	out.WriteString(fl.Iterator.String())
 	out.WriteString(") {")
 	out.WriteString(fl.Body.String())

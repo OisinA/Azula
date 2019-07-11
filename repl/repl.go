@@ -1,18 +1,75 @@
 package repl
 
 import (
-	"azula/lexer"
-	"azula/parser"
+	"azula/compiler"
 	"azula/evaluator"
+	"azula/lexer"
 	"azula/object"
+	"azula/parser"
+	"azula/vm"
 	"bufio"
 	"fmt"
 	"io"
 )
 
-const PROMPT = ">> "
+const PROMPT = "\033[0;36m>>\033[0;0m "
 
 func Start(in io.Reader, out io.Writer) {
+	scanner := bufio.NewScanner(in)
+
+	constants := []object.Object{}
+	globals := make([]object.Object, vm.GlobalsSize)
+	symbolTable := compiler.NewSymbolTable()
+	vars := make(map[string]compiler.Type)
+	for {
+		fmt.Printf(PROMPT)
+		scanned := scanner.Scan()
+		if !scanned {
+			return
+		}
+
+		line := scanner.Text()
+		if line == "exit" {
+			fmt.Println("Goodbye :)")
+			break
+		}
+		l := lexer.New(line)
+		p := parser.New(l)
+
+		program := p.ParseProgram()
+		if len(p.Errors()) != 0 {
+			printParserErrors(out, p.Errors())
+			continue
+		}
+
+		t := compiler.NewTypecheckerFromVars(vars)
+		_, err := t.Typecheck(program)
+		if err != nil {
+			fmt.Fprintf(out, "\033[0;31mType Error:\033[0;0m %s\n", err)
+			continue
+		}
+
+		comp := compiler.NewWithState(symbolTable, constants)
+		err = comp.Compile(program)
+		if err != nil {
+			fmt.Fprintf(out, "\033[0;31mCompile Error:\033[0;0m %s\n", err)
+			continue
+		}
+
+		mac := vm.NewWithGlobalsStore(comp.Bytecode(), globals)
+		err = mac.Run()
+		if err != nil {
+			fmt.Fprintf(out, "Executing failed :(\n%s\n", err)
+			continue
+		}
+
+		stackTop := mac.LastPoppedStackElem()
+		io.WriteString(out, stackTop.Inspect())
+		io.WriteString(out, "\n")
+	}
+}
+
+func StartInterpreted(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 	env := object.NewEnvironment()
 	for {

@@ -2,8 +2,10 @@ package object
 
 import (
 	"azula/ast"
+	"azula/code"
 	"bytes"
 	"strings"
+	"fmt"
 )
 
 type Function struct {
@@ -35,4 +37,17 @@ func (f *Function) Inspect() string {
 	out.WriteString("\n{")
 
 	return out.String()
+}
+
+type CompiledFunction struct {
+	Instructions code.Instructions
+	NumLocals int
+}
+
+func (cf *CompiledFunction) Type() Type {
+	return CompiledFunctionObj
+}
+
+func (cf *CompiledFunction) Inspect() string {
+	return fmt.Sprintf("CompiledFunction(%p)", cf)
 }

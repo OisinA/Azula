@@ -259,37 +259,37 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		default:
 			return applyFunction(function, args)
 		}
-	case *ast.ForLiteral:
-		obj := Eval(node.Iterator, env)
-		if isError(obj) {
-			return obj
-		}
-		switch iterator := obj.(type) {
-		case *object.Array:
-			forLoop := iterator
-			env1 := object.NewEnclosedEnvironment(env)
-			var result object.Object
-			for i := 0; i < len(forLoop.Elements); i++ {
-				env1.Set(node.Parameter.String(), forLoop.Elements[i])
-				result = Eval(node.Body, env1)
-			}
-			if result == nil {
-				result = NULL
-			}
-			return result
-		case *object.Hash:
-			hash := iterator
-			env1 := object.NewEnclosedEnvironment(env)
-			var result object.Object
-			for _, i := range hash.Pairs {
-				env1.Set(node.Parameter.String(), i.Key)
-				result = Eval(node.Body, env1)
-			}
-			if result == nil {
-				result = NULL
-			}
-			return result
-		}
+	// case *ast.ForLiteral:
+	// 	obj := Eval(node.Iterator, env)
+	// 	if isError(obj) {
+	// 		return obj
+	// 	}
+	// 	switch iterator := obj.(type) {
+	// 	case *object.Array:
+	// 		forLoop := iterator
+	// 		env1 := object.NewEnclosedEnvironment(env)
+	// 		var result object.Object
+	// 		for i := 0; i < len(forLoop.Elements); i++ {
+	// 			env1.Set(node.Parameter.String(), forLoop.Elements[i])
+	// 			result = Eval(node.Body, env1)
+	// 		}
+	// 		if result == nil {
+	// 			result = NULL
+	// 		}
+	// 		return result
+		// case *object.Hash:
+		// 	hash := iterator
+		// 	env1 := object.NewEnclosedEnvironment(env)
+		// 	var result object.Object
+		// 	for _, i := range hash.Pairs {
+		// 		env1.Set(node.Parameter.String(), i.Key)
+		// 		result = Eval(node.Body, env1)
+		// 	}
+		// 	if result == nil {
+		// 		result = NULL
+		// 	}
+		// 	return result
+		// }
 	}
 	return nil
 }

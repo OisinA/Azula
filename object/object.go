@@ -16,6 +16,8 @@ const (
 	ErrorObj = "ERROR"
 	// FunctionObj - function
 	FunctionObj = "FUNCTION"
+	// CompiledFunctionObj - compiled function
+	CompiledFunctionObj = "COMPILED_FUNCTION"
 	// StringObj - string
 	StringObj = "STRING"
 	// ArrayObj - array
@@ -56,6 +58,10 @@ func Equality(obj1 *Object, obj2 *Object) bool {
 			return true
 		}
 		return false
+	case BooleanObj:
+		bool1 := ((*obj1).(*Boolean))
+		bool2 := ((*obj2).(*Boolean))
+		return bool1.Value == bool2.Value
 	default:
 		return obj1 == obj2
 	}
