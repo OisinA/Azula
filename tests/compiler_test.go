@@ -490,7 +490,7 @@ func TestCompileFunctions(t *testing.T) {
 	tests := []compilerTestCase{
 		{
 			input: `func x(): int { return 5 + 10 };`,
-			expectedConstants: []interface{} {
+			expectedConstants: []interface{}{
 				5,
 				10,
 				[]code.Instructions{
@@ -515,7 +515,7 @@ func TestCompileFunctionsNoReturn(t *testing.T) {
 	tests := []compilerTestCase{
 		{
 			input: `func x(): void { };`,
-			expectedConstants: []interface{} {
+			expectedConstants: []interface{}{
 				[]code.Instructions{
 					code.Make(code.OpReturn),
 				},
@@ -548,7 +548,7 @@ func TestCompileFunctionCalls(t *testing.T) {
 				code.Make(code.OpNull),
 				code.Make(code.OpPop),
 				code.Make(code.OpGetGlobal, 0),
-				code.Make(code.OpCall),
+				code.Make(code.OpCall, 0),
 				code.Make(code.OpPop),
 			},
 		},
@@ -580,10 +580,72 @@ func TestCompileFunctionCalls(t *testing.T) {
 				code.Make(code.OpNull),
 				code.Make(code.OpPop),
 				code.Make(code.OpGetGlobal, 0),
-				code.Make(code.OpCall),
+				code.Make(code.OpCall, 0),
 				code.Make(code.OpGetGlobal, 1),
-				code.Make(code.OpCall),
+				code.Make(code.OpCall, 0),
 				code.Make(code.OpAdd),
+				code.Make(code.OpPop),
+			},
+		},
+		{
+			input: `func x(int y): int { }; x(5);`,
+			expectedConstants: []interface{}{
+				[]code.Instructions{
+					code.Make(code.OpReturn),
+				},
+				5,
+			},
+			expectedInstructions: []code.Instructions{
+				code.Make(code.OpConstant, 0),
+				code.Make(code.OpSetGlobal, 0),
+				code.Make(code.OpNull),
+				code.Make(code.OpPop),
+				code.Make(code.OpGetGlobal, 0),
+				code.Make(code.OpConstant, 1),
+				code.Make(code.OpCall, 1),
+				code.Make(code.OpPop),
+			},
+		},
+		{
+			input: `func x(int y, int z): int { }; x(5, 2);`,
+			expectedConstants: []interface{}{
+				[]code.Instructions{
+					code.Make(code.OpReturn),
+				},
+				5,
+				2,
+			},
+			expectedInstructions: []code.Instructions{
+				code.Make(code.OpConstant, 0),
+				code.Make(code.OpSetGlobal, 0),
+				code.Make(code.OpNull),
+				code.Make(code.OpPop),
+				code.Make(code.OpGetGlobal, 0),
+				code.Make(code.OpConstant, 1),
+				code.Make(code.OpConstant, 2),
+				code.Make(code.OpCall, 2),
+				code.Make(code.OpPop),
+			},
+		},
+		{
+			input: `func x(int y, int z): int { return y; }; x(5, 2);`,
+			expectedConstants: []interface{}{
+				[]code.Instructions{
+					code.Make(code.OpGetLocal, 0),
+					code.Make(code.OpReturnValue),
+				},
+				5,
+				2,
+			},
+			expectedInstructions: []code.Instructions{
+				code.Make(code.OpConstant, 0),
+				code.Make(code.OpSetGlobal, 0),
+				code.Make(code.OpNull),
+				code.Make(code.OpPop),
+				code.Make(code.OpGetGlobal, 0),
+				code.Make(code.OpConstant, 1),
+				code.Make(code.OpConstant, 2),
+				code.Make(code.OpCall, 2),
 				code.Make(code.OpPop),
 			},
 		},
@@ -661,7 +723,7 @@ func TestCompileLetStatementScopes(t *testing.T) {
 				code.Make(code.OpNull),
 				code.Make(code.OpPop),
 				code.Make(code.OpGetGlobal, 0),
-				code.Make(code.OpCall),
+				code.Make(code.OpCall, 0),
 				code.Make(code.OpPop),
 			},
 		},

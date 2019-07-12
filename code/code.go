@@ -80,17 +80,17 @@ var definitions = map[Opcode]*Definition{
 
 	OpGetGlobal: {"OpGetGlobal", []int{2}},
 	OpSetGlobal: {"OpSetGlobal", []int{2}},
-	OpGetLocal: {"OpGetLocal", []int{2}},
-	OpSetLocal: {"OpSetLocal", []int{2}},
+	OpGetLocal:  {"OpGetLocal", []int{2}},
+	OpSetLocal:  {"OpSetLocal", []int{2}},
 
 	OpArray: {"OpArray", []int{2}},
-	OpHash: {"OpHash", []int{2}},
+	OpHash:  {"OpHash", []int{2}},
 
 	OpIndex: {"OpIndex", []int{}},
 
-	OpCall: {"OpCall", []int{}},
+	OpCall:        {"OpCall", []int{2}},
 	OpReturnValue: {"OpReturnValue", []int{}},
-	OpReturn: {"OpReturn", []int{}},
+	OpReturn:      {"OpReturn", []int{}},
 }
 
 func Lookup(op byte) (*Definition, error) {

@@ -18,8 +18,8 @@ var typeMap = map[object.Type]string{
 }
 
 type CompilationScope struct {
-	instructions code.Instructions
-	lastInstruction EmittedInstruction
+	instructions        code.Instructions
+	lastInstruction     EmittedInstruction
 	previousInstruction EmittedInstruction
 }
 
@@ -34,7 +34,7 @@ type Compiler struct {
 
 	symbolTable *SymbolTable
 
-	scopes []CompilationScope
+	scopes     []CompilationScope
 	scopeIndex int
 }
 
@@ -45,8 +45,8 @@ type Bytecode struct {
 
 func New() *Compiler {
 	mainScope := CompilationScope{
-		instructions: code.Instructions{},
-		lastInstruction: EmittedInstruction{},
+		instructions:        code.Instructions{},
+		lastInstruction:     EmittedInstruction{},
 		previousInstruction: EmittedInstruction{},
 	}
 	return &Compiler{
@@ -55,7 +55,7 @@ func New() *Compiler {
 
 		symbolTable: NewSymbolTable(),
 
-		scopes: []CompilationScope{mainScope},
+		scopes:     []CompilationScope{mainScope},
 		scopeIndex: 0,
 	}
 }
@@ -205,7 +205,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 	// 	c.emit(code.OpJump, origin - len(c.instructions))
 	// 	after := len(c.instructions)
 	// 	c.changeOperand(pos, after)
-		
+
 	// 	if c.lastInstructionIsPop() {
 	// 		c.removeLastPop()
 	// 	}
@@ -281,7 +281,13 @@ func (c *Compiler) Compile(node ast.Node) error {
 
 		c.emit(code.OpIndex)
 	case *ast.FunctionLiteral:
+		symbol := c.symbolTable.Define(node.Name.Value)
 		c.enterScope()
+
+		for _, p := range node.Parameters {
+			c.symbolTable.Define(p.Value)
+		}
+
 		err := c.Compile(node.Body)
 		if err != nil {
 			return err
@@ -292,9 +298,8 @@ func (c *Compiler) Compile(node ast.Node) error {
 		}
 		numLocals := c.symbolTable.numDefinitions
 		instructions := c.leaveScope()
-		compiledFn := &object.CompiledFunction{Instructions: instructions, NumLocals: numLocals}
+		compiledFn := &object.CompiledFunction{Instructions: instructions, NumLocals: numLocals, NumParameters: len(node.Parameters)}
 		c.emit(code.OpConstant, c.addConstant(compiledFn))
-		symbol := c.symbolTable.Define(node.Name.Value)
 		c.emit(code.OpSetGlobal, symbol.Index)
 		c.emit(code.OpNull)
 	case *ast.ReturnStatement:
@@ -308,7 +313,14 @@ func (c *Compiler) Compile(node ast.Node) error {
 		if err != nil {
 			return err
 		}
-		c.emit(code.OpCall)
+
+		for _, a := range node.Arguments {
+			err := c.Compile(a)
+			if err != nil {
+				return err
+			}
+		}
+		c.emit(code.OpCall, len(node.Arguments))
 	}
 
 	return nil
@@ -388,8 +400,8 @@ func (c *Compiler) changeOperand(opPos int, operand int) {
 
 func (c *Compiler) enterScope() {
 	scope := CompilationScope{
-		instructions: code.Instructions{},
-		lastInstruction: EmittedInstruction{},
+		instructions:        code.Instructions{},
+		lastInstruction:     EmittedInstruction{},
 		previousInstruction: EmittedInstruction{},
 	}
 	c.scopes = append(c.scopes, scope)

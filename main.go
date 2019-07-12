@@ -44,8 +44,7 @@ func main() {
 				fmt.Fprintf(out, "\033[0;31mCompile Error:\033[0;0m %s\n", err)
 				return
 			}
-
-			err = ioutil.WriteFile(os.Args[2]+"_executable", comp.Bytecode().Instructions, 0644)
+			err = ioutil.WriteFile(os.Args[2]+"_executable", []byte(comp.Bytecode().Constants + "\n\n" + comp.Bytecode().Instructions, 0644)
 			if err != nil {
 				fmt.Fprintf(out, "\033[0;31mFile Error:\033[0;0m %s\n", err)
 			}
@@ -93,6 +92,8 @@ func main() {
 		} else if os.Args[1] == "interpret" {
 			fmt.Printf("\033[0;92mAzula V0.1\n")
 			repl.StartInterpreted(os.Stdin, os.Stdout)
+		} else {
+
 		}
 	} else {
 		fmt.Printf("\033[0;92mAzula V0.2\n")

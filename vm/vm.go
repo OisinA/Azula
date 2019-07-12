@@ -11,7 +11,7 @@ import (
 const (
 	StackSize   = 2048
 	GlobalsSize = 65536
-	MaxFrames = 1024
+	MaxFrames   = 1024
 )
 
 var (
@@ -21,14 +21,14 @@ var (
 )
 
 type VM struct {
-	constants    []object.Object
+	constants []object.Object
 
 	stack []object.Object
 	sp    int
 
 	globals []object.Object
 
-	frames []*Frame
+	frames      []*Frame
 	framesIndex int
 }
 
@@ -39,14 +39,14 @@ func New(bytecode *compiler.Bytecode) *VM {
 	frames := make([]*Frame, MaxFrames)
 	frames[0] = mainFrame
 	return &VM{
-		constants:    bytecode.Constants,
+		constants: bytecode.Constants,
 
 		stack: make([]object.Object, StackSize),
 		sp:    0,
 
 		globals: make([]object.Object, GlobalsSize),
 
-		frames: frames,
+		frames:      frames,
 		framesIndex: 1,
 	}
 }
@@ -90,18 +90,18 @@ func (vm *VM) Run() error {
 		ins = vm.currentFrame().Instructions()
 		op = code.Opcode(ins[ip])
 
-		fmt.Println("-----")
-		fmt.Println(ins)
-		fmt.Println(vm.currentFrame().ip)
+		// fmt.Println("-----")
+		// fmt.Println(ins)
+		// fmt.Println(vm.currentFrame().ip)
 
 		switch op {
 		case code.OpConstant:
 			constIndex := code.ReadUint16(vm.currentFrame().Instructions()[ip+1:])
 			vm.currentFrame().ip += 2
-			fmt.Println(vm.constants)
-			fmt.Println(constIndex)
-			fmt.Println(vm.currentFrame().Instructions())
-			fmt.Println("-----")
+			// fmt.Println(vm.constants)
+			// fmt.Println(constIndex)
+			// fmt.Println(vm.currentFrame().Instructions())
+			// fmt.Println("-----")
 			err := vm.push(vm.constants[constIndex])
 			if err != nil {
 				return err
@@ -202,14 +202,13 @@ func (vm *VM) Run() error {
 				return err
 			}
 		case code.OpCall:
-			fn, ok := vm.stack[vm.sp-1].(*object.CompiledFunction)
-			if !ok {
-				return fmt.Errorf("calling non-function")
-			}
+			numArgs := code.ReadUint16(ins[ip+1:])
+			vm.currentFrame().ip += 2
 
-			frame := NewFrame(fn, vm.sp)
-			vm.pushFrame(frame)
-			vm.sp = frame.basePointer + fn.NumLocals
+			err := vm.callFunction(int(numArgs))
+			if err != nil {
+				return err
+			}
 		case code.OpReturnValue:
 			returnValue := vm.pop()
 
@@ -234,14 +233,14 @@ func (vm *VM) Run() error {
 			}
 		case code.OpSetLocal:
 			localIndex := code.ReadUint16(ins[ip+1:])
-			vm.currentFrame().ip++
+			vm.currentFrame().ip += 2
 
 			frame := vm.currentFrame()
 			vm.stack[frame.basePointer+int(localIndex)] = vm.pop()
 		case code.OpGetLocal:
 			localIndex := code.ReadUint16(ins[ip+1:])
-			vm.currentFrame().ip++
-			
+			vm.currentFrame().ip += 2
+
 			frame := vm.currentFrame()
 			err := vm.push(vm.stack[frame.basePointer+int(localIndex)])
 			if err != nil {
@@ -286,7 +285,7 @@ func (vm *VM) executeBinaryOperation(op code.Opcode) error {
 	switch {
 	case leftType == object.IntegerObj && rightType == object.IntegerObj:
 		return vm.executeBinaryIntegerOperation(op, left, right)
-	case rightType == object.StringObj && rightType == object.StringObj:
+	case rightType == object.StringObj && leftType == object.StringObj:
 		return vm.executeBinaryStringOperation(op, left, right)
 	}
 
@@ -454,4 +453,22 @@ func (vm *VM) executeHashIndex(hash, index object.Object) error {
 	}
 
 	return vm.push(pair.Value)
+}
+
+func (vm *VM) callFunction(numArgs int) error {
+	fn, ok := vm.stack[vm.sp-1-numArgs].(*object.CompiledFunction)
+	if !ok {
+		return fmt.Errorf("calling non-function")
+	}
+
+	if numArgs != fn.NumParameters {
+		return fmt.Errorf("wrong number of arguments. want=%d, got=%d", fn.NumParameters, numArgs)
+	}
+
+	frame := NewFrame(fn, vm.sp-numArgs)
+	vm.pushFrame(frame)
+
+	vm.sp = frame.basePointer + fn.NumLocals
+
+	return nil
 }

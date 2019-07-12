@@ -25,10 +25,6 @@ func runVmTests(t *testing.T, tests []vmTestCase) {
 		if err != nil {
 			t.Fatalf("compiler error: %s", err)
 		}
-		fmt.Println(comp.Bytecode().Instructions)
-		for _, s := range comp.Bytecode().Constants {
-			fmt.Println(s)
-		}
 		vm := vm.New(comp.Bytecode())
 		err = vm.Run()
 		if err != nil {
@@ -320,24 +316,92 @@ func TestVMFunctionCallLocalBindings(t *testing.T) {
 			`,
 			expected: 15,
 		},
-		// {
-		// 	input: `
-		// 	func one(): int { int y = 1; return y; };
-		// 	func two(): int { int y = 2; return y; };
-		// 	one() + two();
-		// 	`,
-		// 	expected: 3,
-		// },
-		// {
-		// 	input: `
-		// 	int zero = 0;
-		// 	func one(): int { return zero + 1; };
-		// 	func two(): int { return zero + one() + 1; };
-		// 	two();
-		// 	`,
-		// 	expected: 2,
-		// },
+		{
+			input: `
+			func one(): int { int y = 1; return y; };
+			func two(): int { int y = 2; return y; };
+			one() + two();
+			`,
+			expected: 3,
+		},
+		{
+			input: `
+			int zero = 0;
+			func one(): int { return zero + 1; };
+			func two(): int { return zero + one() + 1; };
+			two();
+			`,
+			expected: 2,
+		},
 	}
 	runVmTests(t, tests)
 }
 
+func TestVMFunctionCallWithArguments(t *testing.T) {
+	tests := []vmTestCase{
+		{
+			input: `
+			func x(int y): int { return y; };
+			x(15);
+			`,
+			expected: 15,
+		},
+		{
+			input: `
+			func sum(int y, int z): int { return y + z; };
+			sum(10, 20);
+			`,
+			expected: 30,
+		},
+	}
+	runVmTests(t, tests)
+}
+
+func TestVMCallingFunctionWithWrongArgs(t *testing.T) {
+	tests := []vmTestCase{
+		{
+			input:    "func x(): int { 5; }; x(5);",
+			expected: "wrong number of arguments. want=0, got=1",
+		},
+	}
+	for _, tt := range tests {
+		program := parse(tt.input)
+		comp := compiler.New()
+		err := comp.Compile(program)
+		if err != nil {
+			t.Fatalf("compiler error: %s", err)
+		}
+
+		vm := vm.New(comp.Bytecode())
+		err = vm.Run()
+		if err == nil {
+			t.Fatalf("expected VM error but resulted in none")
+		}
+
+		if err.Error() != tt.expected {
+			t.Fatalf("wrong VM error: want=%q, got=%q", tt.expected, err)
+		}
+	}
+}
+
+func TestVMRecursiveFibonacci(t *testing.T) {
+	tests := []vmTestCase{
+		{
+			input: `
+			func fib(int x): int {
+				if(x == 0) {
+					return 0;
+				}
+				if(x == 1) {
+					return 1;
+				}
+				return fib(x - 1) + fib(x - 2);
+			};
+			fib(15);
+			`,
+			expected: 610,
+		},
+	}
+
+	runVmTests(t, tests)
+}

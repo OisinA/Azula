@@ -4,16 +4,16 @@ import (
 	"azula/ast"
 	"azula/code"
 	"bytes"
-	"strings"
 	"fmt"
+	"strings"
 )
 
 type Function struct {
-	Name *ast.Identifier
+	Name       *ast.Identifier
 	Parameters []*ast.TypedIdentifier
-	Body *ast.BlockStatement
+	Body       *ast.BlockStatement
 	ReturnType *ast.Identifier
-	Env *Environment
+	Env        *Environment
 }
 
 func (f *Function) Type() Type {
@@ -40,8 +40,9 @@ func (f *Function) Inspect() string {
 }
 
 type CompiledFunction struct {
-	Instructions code.Instructions
-	NumLocals int
+	Instructions  code.Instructions
+	NumLocals     int
+	NumParameters int
 }
 
 func (cf *CompiledFunction) Type() Type {
