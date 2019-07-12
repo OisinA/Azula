@@ -6,7 +6,6 @@ import (
 	"azula/lexer"
 	"azula/object"
 	"azula/parser"
-	"azula/vm"
 	"bufio"
 	"fmt"
 	"io"
@@ -17,9 +16,6 @@ const PROMPT = "\033[0;36m>>\033[0;0m "
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 
-	constants := []object.Object{}
-	globals := make([]object.Object, vm.GlobalsSize)
-	symbolTable := compiler.NewSymbolTable()
 	vars := make(map[string]compiler.Type)
 	for {
 		fmt.Printf(PROMPT)
@@ -49,23 +45,12 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		comp := compiler.NewWithState(symbolTable, constants)
-		err = comp.Compile(program)
+		comp := compiler.New()
+		_, err = comp.Compile(program)
 		if err != nil {
-			fmt.Fprintf(out, "\033[0;31mCompile Error:\033[0;0m %s\n", err)
-			continue
+			fmt.Fprintf(out, "%s", err)
 		}
-
-		mac := vm.NewWithGlobalsStore(comp.Bytecode(), globals)
-		err = mac.Run()
-		if err != nil {
-			fmt.Fprintf(out, "Executing failed :(\n%s\n", err)
-			continue
-		}
-
-		stackTop := mac.LastPoppedStackElem()
-		io.WriteString(out, stackTop.Inspect())
-		io.WriteString(out, "\n")
+		fmt.Println(comp.Module)
 	}
 }
 
