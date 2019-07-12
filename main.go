@@ -44,7 +44,23 @@ func main() {
 				fmt.Fprintf(out, "\033[0;31mCompile Error:\033[0;0m %s\n", err)
 				return
 			}
-			err = ioutil.WriteFile(os.Args[2]+"_executable", []byte(comp.Bytecode().Constants + "\n\n" + comp.Bytecode().Instructions, 0644)
+			var constants [][]byte
+			for _, s := range comp.Bytecode().Constants {
+				constants = append(constants, []byte(fmt.Sprintf("%v", s)))
+			}
+			writeOut := make([]byte, 0)
+			for _, b := range constants {
+				for _, bs := range b {
+					writeOut = append(writeOut, bs)
+				}
+			}
+			writeOut = append(writeOut, '\n')
+			writeOut = append(writeOut, '\n')
+			for _, b := range comp.Bytecode().Instructions {
+				writeOut = append(writeOut, b)
+			}
+
+			err = ioutil.WriteFile(os.Args[2]+"_executable", []byte(writeOut), 0644)
 			if err != nil {
 				fmt.Fprintf(out, "\033[0;31mFile Error:\033[0;0m %s\n", err)
 			}
