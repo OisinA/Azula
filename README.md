@@ -2,3 +2,5 @@
 
 A WIP statically-typed interpreted programming language.
 Based on the Writing an Interpreter in Go book by Thorsten Ball.
+
+Development has moved to [github.com/azula-lang/azula](https://github.com/azula-lang/azula).
